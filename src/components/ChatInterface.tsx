@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import ChatInput from './ChatInput';
 import LogoBanner from './LogoBanner';
 import Conversation from './Conversation';
+import { StripedPattern } from './magicui/striped-pattern';
 
 const ChatInterface = () => {
   const [isMessage, setIsMessage] = useState(false);
@@ -17,9 +18,10 @@ const ChatInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-transparent h-screen flex flex-col relative">
+      <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
       {/* Initial State: Centered LogoBanner + Headlines + ChatInput */}
       {!isMessage ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
           <div className="flex flex-col items-center space-y-8 w-full">
             {/* Logo Banner */}
             <LogoBanner />
@@ -61,7 +63,7 @@ const ChatInterface = () => {
           </div>
 
           {/* Chat Input - Fixed at bottom */}
-          <div className="py-4">
+          <div className="py-6">
             <ChatInput onSendMessage={handleSendMessage} />
           </div>
         </div>
