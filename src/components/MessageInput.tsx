@@ -6,9 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface MessageInputProps {
   onSend: (message: string) => void;
+  resumeurl: string | null;
 }
 
-const MessageInput = ({ onSend }: MessageInputProps) => {
+const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -44,7 +45,7 @@ const MessageInput = ({ onSend }: MessageInputProps) => {
         onKeyDown={handleKeyPress}
         placeholder="Paste your job description here..."
         rows={1}
-        className="bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground font-medium placeholder:text-muted-foreground text-sm px-6 resize-none min-h-10 max-h-[200px] w-full shadow-none overflow-y-auto py-4 whitespace-pre-wrap wrap-break-words"
+        className="bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground font-medium placeholder:text-muted-foreground text-sm px-6 resize-none min-h-10 max-h-[120px] w-full shadow-none overflow-y-auto py-4 whitespace-pre-wrap wrap-break-words"
       />
       <Button
         onClick={() => {
@@ -53,7 +54,7 @@ const MessageInput = ({ onSend }: MessageInputProps) => {
             textareaRef.current.style.height = 'auto';
           }
         }}
-        disabled={!message?.trim()}
+        disabled={!message?.trim() || !resumeurl}
         size="icon"
         className="absolute bottom-2 right-2 shrink-0 w-10 h-10 rounded-xl bg-foreground hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground"
         aria-label="Send message"

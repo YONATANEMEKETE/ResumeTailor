@@ -1,17 +1,32 @@
 'use client';
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Plus, ArrowDown, FileText, X } from 'lucide-react';
+import { Plus, ArrowDown, FileText, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useUploadThing } from '@/lib/uploadResume';
+import { ProgressRadial } from './progress-1';
+import { CircleProgress } from './ui/circle-progress';
+import PdfThumbnail from './Pdfthumbnail';
 
 interface FileInputProps {
-  onAttachment: (url: string) => void;
+  previewUrl: string | null;
+  setPreviewUrl: (url: string | null) => void;
 }
 
 // let the user upload file upload it and show preview and send the url back to the parent.
-const FileInput = ({ onAttachment }: FileInputProps) => {
-  const [file, setFile] = useState<File | null>(null);
+const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
+  const [progress, setProgress] = useState<number>(0);
+
+  const { startUpload, isUploading } = useUploadThing('resumeUploader', {
+    onClientUploadComplete: (res) => {
+      setPreviewUrl(res[0].url);
+      setProgress(0);
+    },
+    onUploadProgress: (progress) => {
+      setProgress(progress);
+    },
+  });
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: any[]) => {
@@ -50,13 +65,10 @@ const FileInput = ({ onAttachment }: FileInputProps) => {
         });
       } else {
         const selectedFile = acceptedFiles[0];
-        setFile(selectedFile);
-        // Create a temporary URL for the file
-        const objectUrl = URL.createObjectURL(selectedFile);
-        onAttachment(objectUrl);
+        startUpload([selectedFile]);
       }
     },
-    [onAttachment]
+    [setPreviewUrl]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -71,8 +83,7 @@ const FileInput = ({ onAttachment }: FileInputProps) => {
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening dropzone when clearing
-    setFile(null);
-    onAttachment('');
+    setPreviewUrl(null);
   };
 
   return (
@@ -88,27 +99,31 @@ const FileInput = ({ onAttachment }: FileInputProps) => {
       <div
         className={cn(
           'flex flex-col items-center justify-center transition-all duration-200',
-          !file && 'w-12 h-12 rounded-xl hover:bg-accent/10', // Button-like appearance when empty
-          file && 'w-full h-full p-2', // Full space when file selected
+          'w-full h-full p-2', // Full space when file selected
           isDragActive ? 'text-primary' : 'text-muted-foreground'
         )}
       >
-        {isDragActive ? (
-          <ArrowDown className="w-6 h-6 animate-bounce" />
-        ) : file ? (
-          <div className="flex flex-col items-center justify-center w-full relative group animate-in fade-in zoom-in duration-200">
-            <FileText className="w-5 h-5 mb-1 text-primary" />
-            <span className="text-[10px] leading-tight truncate w-full text-center max-w-full px-1 font-medium">
-              {file.name}
+        {isUploading ? (
+          <div className="flex items-center justify-center w-full h-full relative">
+            <CircleProgress
+              value={progress}
+              maxValue={100}
+              size={50}
+              strokeWidth={5}
+              getColor={() => {
+                return 'stroke-primary/60';
+              }}
+            />
+            <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-forground font-medium text-sm">
+              {progress}%
             </span>
-            <button
-              onClick={handleClear}
-              className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-destructive/90"
-              aria-label="Remove file"
-            >
-              <X className="w-3 h-3" />
-            </button>
           </div>
+        ) : previewUrl ? (
+          <div className="w-full h-full relative">
+            <PdfThumbnail url={previewUrl} />
+          </div>
+        ) : isDragActive ? (
+          <ArrowDown className="w-6 h-6 animate-bounce" />
         ) : (
           <Plus className="w-5 h-5" />
         )}

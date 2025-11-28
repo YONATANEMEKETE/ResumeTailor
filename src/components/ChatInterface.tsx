@@ -4,6 +4,7 @@ import ChatInput from './ChatInput';
 import LogoBanner from './LogoBanner';
 import Conversation from './Conversation';
 import { StripedPattern } from './magicui/striped-pattern';
+import { getGreeting } from '@/lib/utils';
 
 const ChatInterface = () => {
   const [isMessage, setIsMessage] = useState(false);
@@ -18,7 +19,9 @@ const ChatInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-transparent h-screen flex flex-col relative">
-      <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
+      {!isMessage && (
+        <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
+      )}
       {/* Initial State: Centered LogoBanner + Headlines + ChatInput */}
       {!isMessage ? (
         <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
@@ -29,8 +32,11 @@ const ChatInterface = () => {
             {/* Headlines */}
             <div className="text-center space-y-4 max-w-2xl">
               {/* Greeting */}
-              <h1 className="text-7xl text-foreground tracking-tight font-lobster">
-                Good Morning
+              <h1
+                className="text-7xl text-foreground tracking-tight font-lobster"
+                suppressHydrationWarning
+              >
+                {getGreeting()}
               </h1>
 
               {/* Main Headline */}
