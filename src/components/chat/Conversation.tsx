@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { type UIMessage } from 'ai';
-import AssitantMessage from './AssistantMessage';
+import AssistantMessage from './AssistantMessage';
 import UserMessage from './UserMessage';
 
 interface Props {
@@ -25,7 +25,7 @@ const Conversation = ({ messages }: Props) => {
         message.role === 'user' ? (
           <UserMessage key={message.id} message={message} />
         ) : (
-          <AssitantMessage key={message.id} message={message} />
+          <AssistantMessage key={message.id} message={message} />
         )
       )}
       <div ref={messagesEndRef} />
