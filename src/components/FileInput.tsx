@@ -8,6 +8,7 @@ import { useUploadThing } from '@/lib/uploadResume';
 import { ProgressRadial } from './progress-1';
 import { CircleProgress } from './ui/circle-progress';
 import PdfThumbnail from './Pdfthumbnail';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface FileInputProps {
   previewUrl: string | null;
@@ -125,7 +126,14 @@ const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
         ) : isDragActive ? (
           <ArrowDown className="w-6 h-6 animate-bounce" />
         ) : (
-          <Plus className="w-5 h-5" />
+          <Tooltip>
+            <TooltipTrigger asChild className="cursor-pointer">
+              <Plus className="w-5 h-5" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-background text-foreground border border-border">
+              <p>Dran and Drop or click to upload</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
     </div>

@@ -2,28 +2,95 @@
 import React, { useState } from 'react';
 import ChatInput from './ChatInput';
 import LogoBanner from './LogoBanner';
-import Conversation from './Conversation';
+import Conversation, { Message } from './Conversation';
 import { StripedPattern } from './magicui/striped-pattern';
 import { getGreeting } from '@/lib/utils';
 
 const ChatInterface = () => {
-  const [isMessage, setIsMessage] = useState(false);
+  const [conversations, setConversations] = useState<Message[]>([
+    { role: 'user', content: 'Hi, I need help tailoring my resume.' },
+    {
+      role: 'assistant',
+      content:
+        "Hello! I'd be happy to help. Please upload your current resume and the job description you're targeting.",
+    },
+    {
+      role: 'user',
+      content: "I've uploaded it. It's for a Senior Frontend Developer role.",
+    },
+    {
+      role: 'assistant',
+      content:
+        'Great. I see the resume. Based on the job description, you should emphasize your experience with React and performance optimization. Shall I suggest some bullet points?',
+    },
+    { role: 'user', content: 'Yes, please.' },
+    {
+      role: 'assistant',
+      content:
+        'Here are a few suggestions:\n- Led migration of legacy codebase to Next.js, improving load time by 40%.\n- Implemented a design system using Tailwind CSS, reducing development time for new features.',
+    },
+    { role: 'user', content: 'Hi, I need help tailoring my resume.' },
+    {
+      role: 'assistant',
+      content:
+        "Hello! I'd be happy to help. Please upload your current resume and the job description you're targeting.",
+    },
+    {
+      role: 'user',
+      content: "I've uploaded it. It's for a Senior Frontend Developer role.",
+    },
+    {
+      role: 'assistant',
+      content:
+        'Great. I see the resume. Based on the job description, you should emphasize your experience with React and performance optimization. Shall I suggest some bullet points?',
+    },
+    { role: 'user', content: 'Yes, please.' },
+    {
+      role: 'assistant',
+      content:
+        'Here are a few suggestions:\n- Led migration of legacy codebase to Next.js, improving load time by 40%.\n- Implemented a design system using Tailwind CSS, reducing development time for new features.',
+    },
+    { role: 'user', content: 'Hi, I need help tailoring my resume.' },
+    {
+      role: 'assistant',
+      content:
+        "Hello! I'd be happy to help. Please upload your current resume and the job description you're targeting.",
+    },
+    {
+      role: 'user',
+      content: "I've uploaded it. It's for a Senior Frontend Developer role.",
+    },
+    {
+      role: 'assistant',
+      content:
+        'Great. I see the resume. Based on the job description, you should emphasize your experience with React and performance optimization. Shall I suggest some bullet points?',
+    },
+    { role: 'user', content: 'Yes, please.' },
+    {
+      role: 'assistant',
+      content:
+        'Here are a few suggestions:\n- Led migration of legacy codebase to Next.js, improving load time by 40%.\n- Implemented a design system using Tailwind CSS, reducing development time for new features.',
+    },
+  ]);
 
   const handleSendMessage = (prompt: {
     message: string;
     resumeurl: string;
   }) => {
     //TODO: here we handle the send logic to interact with the ai
-    setIsMessage(true);
+    setConversations((prev) => [
+      ...prev,
+      { role: 'user', content: prompt.message },
+    ]);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-transparent h-screen flex flex-col relative">
-      {!isMessage && (
+    <div className="w-full max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {conversations.length == 0 && (
         <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
       )}
       {/* Initial State: Centered LogoBanner + Headlines + ChatInput */}
-      {!isMessage ? (
+      {conversations.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
           <div className="flex flex-col items-center space-y-8 w-full">
             {/* Logo Banner */}
@@ -64,12 +131,12 @@ const ChatInterface = () => {
             <LogoBanner />
           </header>
           {/* Conversation Component */}
-          <div className="flex-1 overflow-y-auto pt-20 text-center">
-            <Conversation />
+          <div className="flex-1">
+            <Conversation messages={conversations} />
           </div>
 
           {/* Chat Input - Fixed at bottom */}
-          <div className="py-6">
+          <div className="py-6 absolute bottom-0 w-full max-w-4xl z-50">
             <ChatInput onSendMessage={handleSendMessage} />
           </div>
         </div>
