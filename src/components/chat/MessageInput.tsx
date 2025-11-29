@@ -10,7 +10,7 @@ interface MessageInputProps {
 }
 
 const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
-  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [message, setMessage] = useState('');
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = () => {
@@ -28,7 +28,8 @@ const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      onSend(message || '');
+      onSend(message);
+      setMessage('');
       // Reset height after sending
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -49,14 +50,15 @@ const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
       />
       <Button
         onClick={() => {
-          onSend(message || '');
+          onSend(message);
+          setMessage('');
           if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
           }
         }}
-        disabled={!message?.trim() || !resumeurl}
+        disabled={!message.trim()}
         size="icon"
-        className="absolute bottom-2 right-2 shrink-0 w-10 h-10 rounded-xl bg-foreground hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground"
+        className="absolute bottom-2 right-2 shrink-0 w-10 h-10 rounded-xl bg-foreground hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground cursor-pointer"
         aria-label="Send message"
       >
         <Send className="w-4 h-4 text-background" />

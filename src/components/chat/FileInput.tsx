@@ -5,10 +5,10 @@ import { Plus, ArrowDown, FileText, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useUploadThing } from '@/lib/uploadResume';
-import { ProgressRadial } from './progress-1';
-import { CircleProgress } from './ui/circle-progress';
-import PdfThumbnail from './Pdfthumbnail';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ProgressRadial } from '../common/progress-1';
+import { CircleProgress } from '../ui/circle-progress';
+import PdfThumbnail from '../common/Pdfthumbnail';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface FileInputProps {
   previewUrl: string | null;

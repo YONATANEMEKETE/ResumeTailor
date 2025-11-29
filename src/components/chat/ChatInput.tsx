@@ -11,10 +11,11 @@ const ChatInput = ({ onSendMessage }: ChatInputProps) => {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
   const handleSend = (message: string) => {
-    if (message && resumeUrl && onSendMessage) {
+    console.log(message, resumeUrl);
+    if (message && onSendMessage) {
       onSendMessage({
         message,
-        resumeurl: resumeUrl,
+        resumeurl: resumeUrl || '',
       });
     }
   };
