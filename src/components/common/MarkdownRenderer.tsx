@@ -95,7 +95,9 @@ const MarkdownRenderer = ({ markdown }: Props) => {
               {...props}
             />
           ),
-          hr: ({ ...props }) => <hr className="my-6 border-muted" {...props} />,
+          hr: ({ ...props }) => (
+            <hr className="my-6 border-border" {...props} />
+          ),
           table: ({ className, ...props }) => (
             <div className="my-6 w-full overflow-y-auto rounded-lg border">
               <table className={cn('w-full text-sm', className)} {...props} />

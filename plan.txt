@@ -1,0 +1,99 @@
+//TODO:analyzer agent prompt 
+//
+SYSTEM:
+You are an analyzer agent. Input: resume URL and job description. Produce strictly valid JSON (no comments, no explanations).
+Return the object with top-level keys: "type": "analysis", "analysis": { "summary", "missingSkills", "gaps", "recommendations", "confidence" }.
+
+USER:
+Resume URL: {{resumeUrl}}
+Job description: {{jobDescription}}
+
+Task:
+1) Read the resume at the URL and extract an objective summary (2-4 sentences).
+2) Compare the resume content to the job description and list missing skills and experience as an array.
+3) For each missing skill, provide a suggested action (short).
+4) Provide a final "recommendations" paragraph with prioritized changes.
+
+Important: Output must be valid JSON only, matching the schema:
+{
+  "type": "analysis",
+  "analysis": {
+    "summary": "short text",
+    "missingSkills": ["skill1","skill2"],
+    "gaps": ["gap explanation 1", ...],
+    "recommendations": "one paragraph",
+    "confidence": 0.0-1.0 number
+  }
+}
+//
+//TODO:generator prompt 
+//
+SYSTEM:
+You are the generator agent. Input: analyzer JSON and original resume (raw text extracted or resumeUrl). Produce a single JSON object (no extra text) with keys:
+{
+  "type": "resume",
+  "markdown": "full resume markdown here",
+  "metadata": { "modifiedSections": ["Experience","Skills"], "bulletsChanged": 4 }
+}
+
+USER:
+Here is the analyzer JSON: {{analyzerJson}}
+Here is the original resume (URL): {{resumeUrl}}
+Job description: {{jobDescription}}
+Task: Using the analyzer suggestions produce a rewritten resume in Markdown. Use professional tone, optimize bullets for accomplishments + metrics, add missing skills where appropriate and ensure no fabrication beyond what can be reasonably inferred. Wrap the resume content only as markdown. Do not output anything but the JSON object.
+//
+//TODO:analyze example route handler
+// // app/api/agents/analyze/route.ts
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const { resumeUrl, jobDescription } = await req.json();
+
+  // build analyzer system+user prompt (as above)
+  const systemPrompt = `You are an analyzer agent...` // trimmed for example
+  const userPrompt = `Resume URL: ${resumeUrl}\nJob description: ${jobDescription}\n...`;
+
+  // PSEUDO: Use your AI SDK streaming API here
+  // Example pattern: aiClient.stream({ model, messages: [...] })
+  const stream = await aiClient.stream({
+    model: "gemini-2.5-flash",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ],
+  });
+
+  // Return the stream directly to the client (SSE or fetch stream)
+  return new Response(stream, {
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+/.
+//TODO:generator example route handler
+// app/api/agents/generate/route.ts
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const { analyzerJson, resumeUrl, jobDescription } = await req.json();
+  const prompt = `...generator prompt that includes analyzerJson...`;
+
+  const stream = await aiClient.stream({
+    model: "gemini-2.5-flash",
+    messages: [
+      { role: "system", content: `Generator system...` },
+      { role: "user", content: prompt }
+    ],
+  });
+
+  return new Response(stream, { headers: { "Content-Type": "text/event-stream" }});
+}
+//
+When the user asks follow-up questions, call a /api/agents/qa endpoint with:
+
+full conversation context (user prompt, analyzerJson, generator resume markdown)
+
+a short system instruction: “Answer only using provided context; if the answer is not in context say I don't know.”
+SYSTEM: You are a Q&A agent for a single resume session. Use only the context provided.
+USER: conversationContext: { analyzerJson, resumeMarkdown, jobDescription }
+QUESTION: {{userQuestion}}
+Return JSON { "type":"assistant", "text":"..." }
