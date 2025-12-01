@@ -56,7 +56,7 @@ const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
             textareaRef.current.style.height = 'auto';
           }
         }}
-        disabled={!message.trim()}
+        disabled={!message.trim() || !resumeurl}
         size="icon"
         className="absolute bottom-2 right-2 shrink-0 w-10 h-10 rounded-xl bg-foreground hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground cursor-pointer"
         aria-label="Send message"

@@ -12,10 +12,10 @@ const ChatInput = ({ onSendMessage }: ChatInputProps) => {
 
   const handleSend = (message: string) => {
     console.log(message, resumeUrl);
-    if (message && onSendMessage) {
+    if (message && resumeUrl && onSendMessage) {
       onSendMessage({
         message,
-        resumeurl: resumeUrl || '',
+        resumeurl: resumeUrl,
       });
     }
   };

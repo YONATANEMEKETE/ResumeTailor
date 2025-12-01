@@ -9,6 +9,8 @@ import { ProgressRadial } from '../common/progress-1';
 import { CircleProgress } from '../ui/circle-progress';
 import PdfThumbnail from '../common/Pdfthumbnail';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { extractPdfContent } from '@/lib/pdf';
+import { useChatStore } from '@/store/useChatStore';
 
 interface FileInputProps {
   previewUrl: string | null;
@@ -17,11 +19,30 @@ interface FileInputProps {
 
 // let the user upload file upload it and show preview and send the url back to the parent.
 const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
+  const setResumeContent = useChatStore((state) => state.setResumeContent);
   const [progress, setProgress] = useState<number>(0);
 
   const { startUpload, isUploading } = useUploadThing('resumeUploader', {
-    onClientUploadComplete: (res) => {
-      setPreviewUrl(res[0].url);
+    onClientUploadComplete: async (res) => {
+      setPreviewUrl(res[0].ufsUrl);
+      const content = await extractPdfContent(res[0].ufsUrl);
+      if (content) {
+        // todo save to store
+        setResumeContent(content);
+        console.log(content);
+      } else {
+        toast.error(
+          'Failed to extract content from the PDF. please upload again',
+          {
+            style: {
+              '--normal-bg':
+                'color-mix(in oklab, var(--destructive) 10%, var(--background))',
+              '--normal-text': 'var(--destructive)',
+              '--normal-border': 'var(--destructive)',
+            } as React.CSSProperties,
+          }
+        );
+      }
       setProgress(0);
     },
     onUploadProgress: (progress) => {
@@ -82,10 +103,11 @@ const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
     noClick: false, // Allow clicking to open file dialog
   });
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent opening dropzone when clearing
-    setPreviewUrl(null);
-  };
+  // TODO implment clearing feature
+  // const handleClear = (e: React.MouseEvent) => {
+  //   e.stopPropagation(); // Prevent opening dropzone when clearing
+  //   setPreviewUrl(null);
+  // };
 
   return (
     <div
@@ -131,7 +153,7 @@ const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
               <Plus className="w-5 h-5" />
             </TooltipTrigger>
             <TooltipContent className="bg-background text-foreground border border-border">
-              <p>Dran and Drop or click to upload</p>
+              <p>Drag and Drop or click to upload</p>
             </TooltipContent>
           </Tooltip>
         )}
