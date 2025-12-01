@@ -7,21 +7,29 @@ import { StripedPattern } from '../magicui/striped-pattern';
 import { getGreeting } from '@/lib/utils';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
+import { useChatStore } from '@/store/useChatStore';
+import { useShallow } from 'zustand/shallow';
 
 const ChatInterface = () => {
+  const { isFirstRequest, resumeContent } = useChatStore(
+    useShallow((state) => ({
+      isFirstRequest: state.isFirstRequest,
+      resumeContent: state.resumeContent,
+    }))
+  );
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
     }),
   });
 
-  const handleSendMessage = async (prompt: {
-    message: string;
-    resumeurl: string;
-  }) => {
+  const handleSendMessage = async (prompt: { message: string }) => {
     console.log(prompt);
     //TODO: here we handle the send logic to interact with the ai
-    sendMessage({ text: prompt.message });
+    sendMessage(
+      { text: prompt.message },
+      { body: { resumeContent, task: 'analyze', jd: prompt.message } }
+    );
   };
 
   return (

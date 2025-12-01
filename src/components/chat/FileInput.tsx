@@ -12,19 +12,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { extractPdfContent } from '@/lib/pdf';
 import { useChatStore } from '@/store/useChatStore';
 
-interface FileInputProps {
-  previewUrl: string | null;
-  setPreviewUrl: (url: string | null) => void;
-}
-
 // let the user upload file upload it and show preview and send the url back to the parent.
-const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
+const FileInput = () => {
   const setResumeContent = useChatStore((state) => state.setResumeContent);
   const [progress, setProgress] = useState<number>(0);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
   const { startUpload, isUploading } = useUploadThing('resumeUploader', {
     onClientUploadComplete: async (res) => {
-      setPreviewUrl(res[0].ufsUrl);
+      setResumeUrl(res[0].ufsUrl);
       const content = await extractPdfContent(res[0].ufsUrl);
       if (content) {
         // todo save to store
@@ -90,7 +86,7 @@ const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
         startUpload([selectedFile]);
       }
     },
-    [setPreviewUrl]
+    [setResumeUrl]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -141,9 +137,9 @@ const FileInput = ({ previewUrl, setPreviewUrl }: FileInputProps) => {
               {progress}%
             </span>
           </div>
-        ) : previewUrl ? (
+        ) : resumeUrl ? (
           <div className="w-full h-full relative">
-            <PdfThumbnail url={previewUrl} />
+            <PdfThumbnail url={resumeUrl} />
           </div>
         ) : isDragActive ? (
           <ArrowDown className="w-6 h-6 animate-bounce" />

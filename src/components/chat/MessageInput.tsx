@@ -3,13 +3,20 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useChatStore } from '@/store/useChatStore';
+import { useShallow } from 'zustand/shallow';
 
 interface MessageInputProps {
   onSend: (message: string) => void;
-  resumeurl: string | null;
 }
 
-const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
+const MessageInput = ({ onSend }: MessageInputProps) => {
+  const { resumeContent, isFirstRequest } = useChatStore(
+    useShallow((state) => ({
+      resumeContent: state.resumeContent,
+      isFirstRequest: state.isFirstRequest,
+    }))
+  );
   const [message, setMessage] = useState('');
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -56,7 +63,7 @@ const MessageInput = ({ onSend, resumeurl }: MessageInputProps) => {
             textareaRef.current.style.height = 'auto';
           }
         }}
-        disabled={!message.trim() || !resumeurl}
+        disabled={!message.trim() || (!!isFirstRequest && !resumeContent)}
         size="icon"
         className="absolute bottom-2 right-2 shrink-0 w-10 h-10 rounded-xl bg-foreground hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground cursor-pointer"
         aria-label="Send message"

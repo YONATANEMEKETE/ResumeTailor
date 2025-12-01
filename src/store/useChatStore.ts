@@ -3,12 +3,12 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 export interface CounterState {
   resumeContent: string;
-  isFirstRequest: boolean | null;
+  isFirstRequest: boolean;
 }
 
 export interface CounterActions {
   setResumeContent: (content: string) => void;
-  setIsFirstRequest: (isFirstRequest: boolean | null) => void;
+  setIsFirstRequest: (isFirstRequest: boolean) => void;
 }
 
 export type CounterStore = CounterState & CounterActions;
@@ -19,10 +19,9 @@ export const useChatStore = create<CounterStore>()(
   persist(
     (set) => ({
       resumeContent: '',
-      isFirstRequest: null,
+      isFirstRequest: true,
       setResumeContent: (content: string) => set({ resumeContent: content }),
-      setIsFirstRequest: (isFirstRequest: boolean | null) =>
-        set({ isFirstRequest }),
+      setIsFirstRequest: (isFirstRequest: boolean) => set({ isFirstRequest }),
     }),
     {
       name: 'chat-storage',
