@@ -1,5 +1,5 @@
-import React from 'react';
 import { ShiningText } from '../ui/shining-text';
+import ClassicLoader from '../ui/loader';
 
 interface props {
   text: string;
@@ -7,7 +7,8 @@ interface props {
 
 const LoadingResponseIndicator = ({ text }: props) => {
   return (
-    <div className="w-full h-12 border border-border rounded-md p-3">
+    <div className="flex items-center gap-x-2">
+      <ClassicLoader />
       <ShiningText text={text} />
     </div>
   );
