@@ -51,7 +51,11 @@ const MessageInput = ({ onSend }: MessageInputProps) => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyPress}
-        placeholder="Paste your job description here..."
+        placeholder={
+          isFirstRequest
+            ? 'Paste your job description here...'
+            : 'Ask anything about your resume...'
+        }
         rows={1}
         className="bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground font-medium placeholder:text-muted-foreground text-sm px-6 resize-none min-h-10 max-h-[120px] w-full shadow-none overflow-y-auto py-4 whitespace-pre-wrap wrap-break-words"
       />

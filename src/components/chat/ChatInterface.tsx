@@ -47,7 +47,10 @@ const ChatInterface = () => {
     }
   }, [status, messages, isFirstRequest]);
 
-  const handleSendMessage = async (prompt: { message: string }) => {
+  const handleSendMessage = async (
+    prompt: { message: string },
+    isRegenerateMode?: boolean
+  ) => {
     console.log(prompt);
     if (isFirstRequest || true) {
       // First request: analyze the job description
@@ -86,7 +89,11 @@ const ChatInterface = () => {
       // Mark first request as complete
       setIsFirstRequest(false);
     } else {
-      console.log('not first request');
+      if (isRegenerateMode) {
+        // todo make the re-generate request
+      } else {
+        // todo make the normal request
+      }
     }
   };
 

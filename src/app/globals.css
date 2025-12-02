@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -177,7 +177,11 @@
 
   --color-color-destructive-foreground: var(----color-destructive-foreground);
 
-  --color-color-color-destructive-foreground: var(----color-color-destructive-foreground);
+  --color-color-color-destructive-foreground: var(
+    ----color-color-destructive-foreground
+  );
+
+  --animate-spin-slow: spin 3s linear infinite;
 }
 
 @layer base {

@@ -148,7 +148,7 @@ const FileInput = () => {
             <TooltipTrigger asChild className="cursor-pointer">
               <Plus className="w-5 h-5" />
             </TooltipTrigger>
-            <TooltipContent className="bg-background text-foreground border border-border">
+            <TooltipContent className="">
               <p>Drag and Drop or click to upload</p>
             </TooltipContent>
           </Tooltip>
