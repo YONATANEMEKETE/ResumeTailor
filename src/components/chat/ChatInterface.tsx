@@ -11,10 +11,11 @@ import { useChatStore } from '@/store/useChatStore';
 import { useShallow } from 'zustand/shallow';
 
 const ChatInterface = () => {
-  const { isFirstRequest, resumeContent } = useChatStore(
+  const { isFirstRequest, resumeContent, setIsFirstRequest } = useChatStore(
     useShallow((state) => ({
       isFirstRequest: state.isFirstRequest,
       resumeContent: state.resumeContent,
+      setIsFirstRequest: state.setIsFirstRequest,
     }))
   );
   const { messages, sendMessage, status } = useChat({
@@ -22,14 +23,56 @@ const ChatInterface = () => {
       api: '/api/chat',
     }),
   });
+  const [loadingMsg, setLoadingMsg] = useState<
+    'Loading...' | 'Analyzing...' | 'Generating your new resume...'
+  >('Loading...');
+
+  // Update loading message based on status and message count
+  React.useEffect(() => {
+    if (status === 'submitted' || status === 'streaming') {
+      if (isFirstRequest) {
+        // Count assistant messages to determine which phase we're in
+        const assistantMessageCount = messages.filter(
+          (msg) => msg.role === 'assistant'
+        ).length;
+
+        if (assistantMessageCount === 0) {
+          setLoadingMsg('Analyzing...');
+        } else if (assistantMessageCount === 1) {
+          setLoadingMsg('Generating your new resume...');
+        }
+      } else {
+        setLoadingMsg('Loading...');
+      }
+    }
+  }, [status, messages, isFirstRequest]);
 
   const handleSendMessage = async (prompt: { message: string }) => {
     console.log(prompt);
-    //TODO: here we handle the send logic to interact with the ai
-    sendMessage(
-      { text: prompt.message },
-      { body: { resumeContent, task: 'analyze', jd: prompt.message } }
-    );
+    if (isFirstRequest || true) {
+      // First request: analyze the job description
+      await sendMessage(
+        { text: prompt.message },
+        { body: { resumeContent, task: 'analyze', jd: prompt.message } }
+      );
+
+      // Second request: generate the tailored resume with the analysis
+      await sendMessage(
+        { text: '' },
+        {
+          body: {
+            resumeContent,
+            task: 'generate',
+            jd: prompt.message,
+          },
+        }
+      );
+
+      // Mark first request as complete
+      setIsFirstRequest(false);
+    } else {
+      console.log('not first request');
+    }
   };
 
   return (
@@ -80,7 +123,11 @@ const ChatInterface = () => {
           </header>
           {/* Conversation Component */}
           <div className="flex-1">
-            <Conversation messages={messages} />
+            <Conversation
+              messages={messages}
+              status={status}
+              loadingMsg={loadingMsg}
+            />
           </div>
 
           {/* Chat Input - Fixed at bottom */}
