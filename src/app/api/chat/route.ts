@@ -15,21 +15,25 @@ export async function POST(req: Request) {
     task,
     resumeContent,
     jd,
+    analysis,
   }: {
     messages: UIMessage[];
     resumeContent: string;
     task: 'analyze' | 'generate' | 're-generate' | 'assist';
     jd: string;
+    analysis?: string;
   } = await req.json();
 
   console.log(task);
   console.log(resumeContent);
   console.log(jd);
+  console.log('Analysis:', analysis);
 
   const { systemPrompt, userPrompt } = generateTheRightPrompts({
     task,
     resumeContent,
     jobDescription: jd,
+    analysis,
   });
 
   const result = streamText({

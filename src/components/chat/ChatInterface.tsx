@@ -51,10 +51,24 @@ const ChatInterface = () => {
     console.log(prompt);
     if (isFirstRequest || true) {
       // First request: analyze the job description
-      await sendMessage(
+      const analyzeResponse = await sendMessage(
         { text: prompt.message },
         { body: { resumeContent, task: 'analyze', jd: prompt.message } }
       );
+
+      // Wait for the analysis to complete and extract it
+      // The analysis will be in the last assistant message
+      const analysisMessage = messages.find(
+        (msg) =>
+          msg.role === 'assistant' &&
+          msg.parts.some((part) => part.type === 'text')
+      );
+
+      const analysisText =
+        analysisMessage?.parts
+          .filter((part) => part.type === 'text')
+          .map((part) => part.text)
+          .join('') || '';
 
       // Second request: generate the tailored resume with the analysis
       await sendMessage(
@@ -64,6 +78,7 @@ const ChatInterface = () => {
             resumeContent,
             task: 'generate',
             jd: prompt.message,
+            analysis: analysisText,
           },
         }
       );
