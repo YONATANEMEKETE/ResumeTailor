@@ -52,11 +52,17 @@ const ChatInterface = () => {
     isRegenerateMode?: boolean
   ) => {
     console.log(prompt);
-    if (isFirstRequest || true) {
+    if (isFirstRequest) {
       // First request: analyze the job description
       const analyzeResponse = await sendMessage(
         { text: prompt.message },
-        { body: { resumeContent, task: 'analyze', jd: prompt.message } }
+        {
+          body: {
+            resumeContent,
+            task: 'analyze',
+            promptMessage: prompt.message,
+          },
+        }
       );
 
       // Wait for the analysis to complete and extract it
@@ -80,7 +86,6 @@ const ChatInterface = () => {
           body: {
             resumeContent,
             task: 'generate',
-            jd: prompt.message,
             analysis: analysisText,
           },
         }
@@ -91,8 +96,24 @@ const ChatInterface = () => {
     } else {
       if (isRegenerateMode) {
         // todo make the re-generate request
+        await sendMessage(
+          { text: prompt.message },
+          {
+            body: {
+              task: 're-generate',
+            },
+          }
+        );
       } else {
         // todo make the normal request
+        await sendMessage(
+          { text: prompt.message },
+          {
+            body: {
+              task: 'assist',
+            },
+          }
+        );
       }
     }
   };
