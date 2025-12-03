@@ -22,20 +22,27 @@ import {
   PromptInputHeader,
 } from '@/components/ai-elements/prompt-input';
 import { models } from '@/data/models';
+import { ChatStatus } from 'ai';
+import { Send } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface PromptInputWrapperProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
+  status: ChatStatus;
 }
 
-const PromptInputWrapper = ({ onSendMessage }: PromptInputWrapperProps) => {
+const PromptInputWrapper = ({
+  onSendMessage,
+  status,
+}: PromptInputWrapperProps) => {
   const [text, setText] = useState<string>('');
-  const [modelId, setModelId] = useState<string>(models[0].id);
+  const [selectedModelId, setSelectedModelId] = useState<string>(models[0].id);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (message: PromptInputMessage) => {
-    onSendMessage(message, 'gpt-3.5-turbo');
+    onSendMessage(message, selectedModelId);
+    setText('');
   };
 
   return (
@@ -75,7 +82,10 @@ const PromptInputWrapper = ({ onSendMessage }: PromptInputWrapperProps) => {
         <PromptInputFooter>
           <PromptInputTools>
             <PromptInputActionMenu>
-              <PromptInputActionMenuTrigger className="cursor-pointer" />
+              <PromptInputActionMenuTrigger
+                className="cursor-pointer size-9"
+                variant="outline"
+              />
               <PromptInputActionMenuContent>
                 <PromptInputActionAddAttachments
                   label="Attach your Resume"
@@ -84,10 +94,10 @@ const PromptInputWrapper = ({ onSendMessage }: PromptInputWrapperProps) => {
               </PromptInputActionMenuContent>
             </PromptInputActionMenu>
             <PromptInputSelect
-              onValueChange={(value) => setModelId(value)}
-              value={modelId}
+              onValueChange={(value) => setSelectedModelId(value)}
+              value={selectedModelId}
             >
-              <PromptInputSelectTrigger className="cursor-pointer bg-secondary">
+              <PromptInputSelectTrigger className="cursor-pointer focus-visible:border-border  bg-background border border-border">
                 <PromptInputSelectValue />
               </PromptInputSelectTrigger>
               <PromptInputSelectContent>
@@ -104,7 +114,9 @@ const PromptInputWrapper = ({ onSendMessage }: PromptInputWrapperProps) => {
             </PromptInputSelect>
           </PromptInputTools>
           {/* TODO:  add status to the disabled and the status attr too from the useChat */}
-          <PromptInputSubmit disabled={!text} />
+          <PromptInputSubmit disabled={!text} status={status}>
+            <Send className="size-4" />
+          </PromptInputSubmit>
         </PromptInputFooter>
       </PromptInput>
     </div>

@@ -2,12 +2,14 @@ import { getGreeting } from '@/lib/utils';
 import LogoBanner from '../common/LogoBanner';
 import PromptInputWrapper from './PromptInputWrapper';
 import { PromptInputMessage } from '../ai-elements/prompt-input';
+import { ChatStatus } from 'ai';
 
 interface InitialChatViewProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
+  status: ChatStatus;
 }
 
-const InitialChatView = ({ onSendMessage }: InitialChatViewProps) => {
+const InitialChatView = ({ onSendMessage, status }: InitialChatViewProps) => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
       <div className="flex flex-col items-center space-y-8 w-full">
@@ -37,7 +39,7 @@ const InitialChatView = ({ onSendMessage }: InitialChatViewProps) => {
 
         {/* Chat Input - Centered */}
         <div className="w-full pt-16">
-          <PromptInputWrapper onSendMessage={onSendMessage} />
+          <PromptInputWrapper onSendMessage={onSendMessage} status={status} />
         </div>
       </div>
     </div>
