@@ -74,7 +74,7 @@ const page = () => {
             {/* Conversation Component */}
             <div className="flex-1">
               <div className="min-h-screen pt-20 p-4 space-y-8 pb-48">
-                <Conversation>
+                <Conversation className="relative">
                   <ConversationContent>
                     {messages.map((message) => (
                       <Fragment key={message.id}>
@@ -90,15 +90,18 @@ const page = () => {
                                   <MessageContent
                                     className={`${
                                       message.role === 'assistant'
-                                        ? 'w-full'
+                                        ? 'w-full max-w-full'
                                         : ''
                                     }`}
                                   >
                                     {/* TODO: check if the role is assitant, and use another component, that will inline use this messageresponse component for normal text response or another for resume content. */}
-                                    {/* <MessageResponse>
-                                      {part.text}
-                                    </MessageResponse> */}
-                                    <MarkdownRenderer markdown={part.text} />
+                                    {message.role === 'user' ? (
+                                      <MessageResponse>
+                                        {part.text}
+                                      </MessageResponse>
+                                    ) : (
+                                      <MarkdownRenderer markdown={part.text} />
+                                    )}
                                   </MessageContent>
 
                                   <MessageActions
@@ -143,7 +146,7 @@ const page = () => {
                       </Fragment>
                     ))}
                     {status === 'submitted' && (
-                      <LoadingResponseIndicator text="Loading Response" />
+                      <LoadingResponseIndicator text="a moment please..." />
                     )}
                   </ConversationContent>
                   <ConversationScrollButton className="z-1000" />
@@ -152,7 +155,7 @@ const page = () => {
             </div>
 
             {/* Chat Input - Fixed at bottom */}
-            <div className="py-6 absolute bottom-0 w-full max-w-4xl z-50">
+            <div className="py-6 absolute bottom-0 w-full max-w-4xl z-10">
               <PromptInputWrapper
                 onSendMessage={handleSendMessage}
                 status={status}
