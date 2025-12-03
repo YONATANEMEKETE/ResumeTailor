@@ -28,6 +28,7 @@ import {
 } from '@/components/ai-elements/reasoning';
 import LoadingResponseIndicator from '@/components/chat/LoadingResponseIndicator';
 import MarkdownRenderer from '@/components/common/MarkdownRenderer';
+import MarkdownRendererWrapper from '@/components/chat/MarkdownRendererWrapper';
 
 const page = () => {
   const { messages, sendMessage, status, regenerate } = useChat({
@@ -94,13 +95,15 @@ const page = () => {
                                         : ''
                                     }`}
                                   >
-                                    {/* TODO: check if the role is assitant, and use another component, that will inline use this messageresponse component for normal text response or another for resume content. */}
+                                    {/* Use MarkdownRendererWrapper for assistant messages to detect and display resume content */}
                                     {message.role === 'user' ? (
                                       <MessageResponse>
                                         {part.text}
                                       </MessageResponse>
                                     ) : (
-                                      <MarkdownRenderer markdown={part.text} />
+                                      <MarkdownRendererWrapper
+                                        markdown={part.text}
+                                      />
                                     )}
                                   </MessageContent>
 
