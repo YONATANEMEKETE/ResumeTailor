@@ -1,6 +1,3 @@
-/**
- * Interface representing the parsed sections of markdown content
- */
 export interface ParsedMarkdown {
   beforeResume: string;
   resumeContent: string;
@@ -8,20 +5,6 @@ export interface ParsedMarkdown {
   hasResume: boolean;
 }
 
-/**
- * Parses markdown text to extract resume content wrapped in |resume| markers
- *
- * @param markdown - The full markdown text to parse
- * @returns ParsedMarkdown object with separated sections
- *
- * @example
- * const text = "Hello\n|resume|\nJohn Doe\n|resume|\nGoodbye";
- * const result = parseResumeFromMarkdown(text);
- * // result.beforeResume = "Hello\n"
- * // result.resumeContent = "\nJohn Doe\n"
- * // result.afterResume = "\nGoodbye"
- * // result.hasResume = true
- */
 export function parseResumeFromMarkdown(markdown: string): ParsedMarkdown {
   // Initialize the result object with default values
   const result: ParsedMarkdown = {

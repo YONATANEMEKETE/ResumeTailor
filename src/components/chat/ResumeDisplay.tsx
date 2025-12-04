@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import MarkdownRenderer from '@/components/common/MarkdownRenderer';
 import { cn } from '@/lib/utils';
-import Editer from './Editer';
+import Editer from './editor/Editer';
 import { Button } from '../ui/button';
 import { Download, Eye, Pencil } from 'lucide-react';
 import { motion } from 'motion/react';
