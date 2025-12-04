@@ -76,7 +76,7 @@ const PromptInputWrapper = ({
             value={text}
             onChange={(e) => setText(e.target.value)}
             ref={textAreaRef}
-            placeholder="Paste the Job Description"
+            placeholder="Paste the Job Description or Ask any questions"
           />
         </PromptInputBody>
         <PromptInputFooter>
