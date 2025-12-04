@@ -11,9 +11,10 @@ import { Separator } from '../ui/separator';
 
 interface Props {
   content: string;
+  isStreaming: boolean;
 }
 
-const ResumeDisplay = ({ content }: Props) => {
+const ResumeDisplay = ({ content, isStreaming }: Props) => {
   const [edittedcontent, setEdittedContent] = useState<string>(content);
   const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('preview');
   const uniqueId = useId();
@@ -66,11 +67,12 @@ const ResumeDisplay = ({ content }: Props) => {
             <button
               onClick={() => setActiveMode('edit')}
               className={cn(
-                'relative flex items-center gap-2 px-4 py-1 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer',
+                'relative flex items-center gap-2 px-4 py-1 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer disabled:cursor-not-allowed',
                 activeMode === 'edit'
                   ? 'text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              disabled={isStreaming}
             >
               <Pencil className="size-4" />
               Edit

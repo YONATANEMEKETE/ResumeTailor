@@ -103,6 +103,7 @@ const page = () => {
                                     ) : (
                                       <MarkdownRendererWrapper
                                         markdown={part.text}
+                                        isStreaming={status === 'streaming'}
                                       />
                                     )}
                                   </MessageContent>

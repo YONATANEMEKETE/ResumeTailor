@@ -5,18 +5,10 @@ import { parseResumeFromMarkdown } from '@/lib/markdown-parser';
 
 interface Props {
   markdown: string;
+  isStreaming: boolean;
 }
 
-/**
- * Smart wrapper component that detects and separates resume content from regular markdown
- *
- * This component:
- * 1. Parses the incoming markdown to detect |resume| markers
- * 2. Splits content into: before, resume, and after sections
- * 3. Renders resume content in a special ResumeDisplay component
- * 4. Renders other content in the normal MarkdownRenderer
- */
-const MarkdownRendererWrapper = ({ markdown }: Props) => {
+const MarkdownRendererWrapper = ({ markdown, isStreaming }: Props) => {
   // Parse the markdown to extract resume content
   const { beforeResume, resumeContent, afterResume, hasResume } =
     parseResumeFromMarkdown(markdown);
@@ -33,7 +25,9 @@ const MarkdownRendererWrapper = ({ markdown }: Props) => {
       {beforeResume.trim() && <MarkdownRenderer markdown={beforeResume} />}
 
       {/* Render the resume content in a special component */}
-      {resumeContent.trim() && <ResumeDisplay content={resumeContent} />}
+      {resumeContent.trim() && (
+        <ResumeDisplay content={resumeContent} isStreaming={isStreaming} />
+      )}
 
       {/* Render content after the resume */}
       {afterResume.trim() && <MarkdownRenderer markdown={afterResume} />}
