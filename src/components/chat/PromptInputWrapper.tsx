@@ -114,7 +114,10 @@ const PromptInputWrapper = ({
             </PromptInputSelect>
           </PromptInputTools>
           {/* TODO:  add status to the disabled and the status attr too from the useChat */}
-          <PromptInputSubmit disabled={!text} status={status}>
+          <PromptInputSubmit
+            disabled={!text || status === 'streaming'}
+            status={status}
+          >
             <Send className="size-4" />
           </PromptInputSubmit>
         </PromptInputFooter>
