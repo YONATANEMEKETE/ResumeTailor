@@ -7,6 +7,7 @@ import Editer from './Editer';
 import { Button } from '../ui/button';
 import { Download, Eye, Pencil } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Separator } from '../ui/separator';
 
 interface Props {
   content: string;
@@ -44,7 +45,7 @@ const ResumeDisplay = ({ content }: Props) => {
             <button
               onClick={() => setActiveMode('preview')}
               className={cn(
-                'relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer',
+                'relative flex items-center gap-2 px-4 py-1 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer',
                 activeMode === 'preview'
                   ? 'text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
@@ -65,7 +66,7 @@ const ResumeDisplay = ({ content }: Props) => {
             <button
               onClick={() => setActiveMode('edit')}
               className={cn(
-                'relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer',
+                'relative flex items-center gap-2 px-4 py-1 text-sm font-medium rounded-md transition-colors z-10 cursor-pointer',
                 activeMode === 'edit'
                   ? 'text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
@@ -98,7 +99,7 @@ const ResumeDisplay = ({ content }: Props) => {
       <div
         className={cn(
           'w-full rounded-lg border border-border bg-background',
-          'shadow-sm',
+          'shadow-sm hover:border-primary/40 transition-colors',
           activeMode === 'preview' && 'p-6',
           activeMode === 'edit' && 'p-0 overflow-hidden border-none'
         )}
