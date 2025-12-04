@@ -5,9 +5,9 @@ import MarkdownRenderer from '@/components/common/MarkdownRenderer';
 import { cn } from '@/lib/utils';
 import Editer from './editor/Editer';
 import { Button } from '../ui/button';
-import { Download, Eye, Pencil } from 'lucide-react';
+import { Download, Eye, Pencil, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Separator } from '../ui/separator';
+import { toast } from 'sonner';
 
 interface Props {
   content: string;
@@ -17,6 +17,7 @@ interface Props {
 const ResumeDisplay = ({ content, isStreaming }: Props) => {
   const [edittedcontent, setEdittedContent] = useState<string>(content);
   const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('preview');
+  const [isExporting, setIsExporting] = useState(false);
   const uniqueId = useId();
 
   // Update content when streaming
@@ -24,9 +25,64 @@ const ResumeDisplay = ({ content, isStreaming }: Props) => {
     setEdittedContent(content);
   }, [content]);
 
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Exporting resume...');
+  const handleExport = async () => {
+    // Validate content
+    if (!edittedcontent || edittedcontent.trim().length === 0) {
+      toast.error('Resume content is empty. Please generate a resume first.', {
+        description: 'Export Failed',
+      });
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+
+      // Call API to generate PDF
+      const response = await fetch('/api/export-resume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: edittedcontent }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate PDF');
+      }
+
+      // Get PDF blob
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resume-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      // Show success message
+      toast.success('Your resume has been downloaded as PDF.', {
+        description: 'Export Successful',
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.',
+        {
+          description: 'Export Failed',
+        }
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -91,10 +147,20 @@ const ResumeDisplay = ({ content, isStreaming }: Props) => {
           <Button
             variant="outline"
             onClick={handleExport}
-            className="gap-2 border-border hover:bg-secondary/50 cursor-pointer"
+            disabled={isExporting || isStreaming}
+            className="gap-2 border-border hover:bg-secondary/50 cursor-pointer disabled:cursor-not-allowed"
           >
-            <Download className="size-4" />
-            Export
+            {isExporting ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="size-4" />
+                Export
+              </>
+            )}
           </Button>
         </div>
       </div>
