@@ -1,27 +1,16 @@
 'use client';
 
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { TextStyleKit } from '@tiptap/extension-text-style';
-import { Color } from '@tiptap/extension-color';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import {
   Bold,
   Italic,
-  Underline as UnderlineIcon,
   List,
   ListOrdered,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Heading1,
-  Heading2,
-  Heading3,
   Undo,
   Redo,
   Link2,
@@ -243,6 +232,7 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
         isHeading1: ctx.editor.isActive('heading', { level: 1 }) ?? false,
         isHeading2: ctx.editor.isActive('heading', { level: 2 }) ?? false,
         isHeading3: ctx.editor.isActive('heading', { level: 3 }) ?? false,
+        isHeading4: ctx.editor.isActive('heading', { level: 4 }) ?? false,
         isBulletList: ctx.editor.isActive('bulletList') ?? false,
         isOrderedList: ctx.editor.isActive('orderedList') ?? false,
         canUndo: ctx.editor.can().chain().undo().run() ?? false,
@@ -305,6 +295,15 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
           >
             H3
           </ToolbarButton>
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 4 }).run()
+            }
+            isActive={editorState.isHeading4}
+            tooltip="Heading 4"
+          >
+            H4
+          </ToolbarButton>
         </div>
 
         <Separator
@@ -314,6 +313,7 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
 
         {/* Text Formatting */}
         <div className="flex items-center gap-1">
+          {/*  */}
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             disabled={!editorState.canBold}
@@ -338,7 +338,14 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
           >
             <Strikethrough className="h-4 w-4" />
           </ToolbarButton>
+        </div>
 
+        <Separator
+          orientation="vertical"
+          className="data-[orientation=vertical]:h-6 mx-1"
+        />
+
+        <div className="flex items-center gap-1">
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editorState.isBulletList}
@@ -353,28 +360,14 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
           >
             <ListOrdered className="h-4 w-4" />
           </ToolbarButton>
-
-          {/* <ToolbarButton
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            isActive={editor.isActive('underline')}
-            tooltip="Underline"
-          >
-            <UnderlineIcon className="h-4 w-4" />
-          </ToolbarButton> */}
         </div>
 
         <Separator
           orientation="vertical"
           className="data-[orientation=vertical]:h-6 mx-1"
         />
-
         {/* Link */}
         <LinkEditor editor={editor} />
-
-        <Separator
-          orientation="vertical"
-          className="data-[orientation=vertical]:h-6 mx-1"
-        />
       </div>
     </div>
   );
@@ -385,10 +378,9 @@ const Editer = ({ content, onChange }: EditerProps) => {
     extensions: [
       StarterKit.configure({
         heading: {
-          levels: [1, 2, 3],
+          levels: [1, 2, 3, 4],
         },
       }),
-      TextStyleKit,
       Link.configure({
         openOnClick: true,
         HTMLAttributes: {
