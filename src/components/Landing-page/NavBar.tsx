@@ -3,10 +3,11 @@
 import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { TextureButton } from '../ui/texture-button';
 
 const NavBar = () => {
   return (
-    <nav className="w-full fixed top-0 z-50 backdrop-blur">
+    <nav className="w-full z-50 fixed top-0 inset-x-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Brand Name */}
@@ -26,11 +27,8 @@ const NavBar = () => {
           </div>
 
           {/* CTA Button */}
-          <Button
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium cursor-pointer"
-          >
-            Try for Free
+          <Button className="from-primary via-primary/60 to-primary bg-transparent bg-linear-to-r bg-size-[200%_auto] hover:bg-transparent hover:bg-position-[99%_center] cursor-pointer">
+            Get Started
           </Button>
         </div>
       </div>

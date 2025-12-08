@@ -93,7 +93,7 @@ function ElegantShape({
 
 export default function ShapeHero() {
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-[#030303]">
+    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0 bg-linear-to-br from-indigo-500/2 via-transparent to-rose-500/2 dark:from-indigo-500/5 dark:via-transparent dark:to-rose-500/5 blur-3xl" />
 
       <div className="absolute inset-0 overflow-hidden">
