@@ -93,7 +93,7 @@ function ElegantShape({
 
 export default function ShapeHero() {
   return (
-    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
+    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-linear-to-br from-indigo-500/2 via-transparent to-rose-500/2 dark:from-indigo-500/5 dark:via-transparent dark:to-rose-500/5 blur-3xl" />
 
       <div className="absolute inset-0 overflow-hidden">
@@ -187,7 +187,11 @@ export default function ShapeHero() {
         />
       </div>
 
-      <div className="absolute inset-0 bg-linear-to-t from-white via-transparent to-white/80 dark:from-[#030303] dark:via-transparent dark:to-[#030303]/80 pointer-events-none" />
+      {/* Top gradient overlay */}
+      <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-background/80 pointer-events-none" />
+
+      {/* Bottom gradient overlay for transition shadowing */}
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-linear-to-t from-background via-background/60 to-transparent pointer-events-none" />
     </div>
   );
 }

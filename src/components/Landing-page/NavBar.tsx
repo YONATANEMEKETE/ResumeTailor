@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { TextureButton } from '../ui/texture-button';
+import Link from 'next/link';
 
 const NavBar = () => {
   return (
@@ -27,9 +28,11 @@ const NavBar = () => {
           </div>
 
           {/* CTA Button */}
-          <Button className="from-primary via-primary/60 to-primary bg-transparent bg-linear-to-r bg-size-[200%_auto] hover:bg-transparent hover:bg-position-[99%_center] cursor-pointer">
-            Get Started
-          </Button>
+          <Link href="/chat">
+            <Button className="from-primary via-primary/60 to-primary bg-transparent bg-linear-to-r bg-size-[200%_auto] hover:bg-transparent hover:bg-position-[99%_center] cursor-pointer">
+              Get Started
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
