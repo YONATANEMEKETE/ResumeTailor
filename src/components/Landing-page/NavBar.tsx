@@ -13,18 +13,15 @@ const NavBar = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Brand Name */}
           <div className="flex items-center gap-2">
-            <div className="relative h-10 w-10">
+            <Link href={'/'} className="relative w-48 h-16 cursor-pointer">
               <Image
-                src="/logo1.png"
+                src="/logo-with-text.png"
                 alt="Resume Tailor Logo"
                 fill
                 className="object-contain"
                 priority
               />
-            </div>
-            <span className="text-xl font-bold text-foreground">
-              Resume Tailor
-            </span>
+            </Link>
           </div>
 
           {/* CTA Button */}

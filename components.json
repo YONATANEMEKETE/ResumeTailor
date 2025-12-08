@@ -22,6 +22,7 @@
     "@magicui": "https://magicui.design/r/{name}.json",
     "@smoothui": "https://smoothui.dev/r/{name}.json",
     "@ai-elements": "https://registry.ai-sdk.dev/{name}.json",
-    "@kokonutui": "https://kokonutui.com/r/{name}.json"
+    "@kokonutui": "https://kokonutui.com/r/{name}.json",
+    "@shadcnblocks": "https://shadcnblocks.com/r/{name}.json"
   }
 }
