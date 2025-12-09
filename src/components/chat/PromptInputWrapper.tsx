@@ -23,18 +23,20 @@ import {
 } from '@/components/ai-elements/prompt-input';
 import { models } from '@/data/models';
 import { ChatStatus } from 'ai';
-import { Send } from 'lucide-react';
+import { Send, Square } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface PromptInputWrapperProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
   status: ChatStatus;
+  stop: () => void;
 }
 
 const PromptInputWrapper = ({
   onSendMessage,
   status,
+  stop,
 }: PromptInputWrapperProps) => {
   const [text, setText] = useState<string>('');
   const [selectedModelId, setSelectedModelId] = useState<string>(models[0].id);
@@ -115,10 +117,19 @@ const PromptInputWrapper = ({
           </PromptInputTools>
           {/* TODO:  add status to the disabled and the status attr too from the useChat */}
           <PromptInputSubmit
-            disabled={!text || status === 'streaming'}
             status={status}
+            onClick={() => {
+              if (status === 'streaming') {
+                stop();
+              }
+            }}
+            className="cursor-pointer"
           >
-            <Send className="size-4" />
+            {status === 'streaming' ? (
+              <Square className="size-4 animate-spin" />
+            ) : (
+              <Send className="size-4" />
+            )}
           </PromptInputSubmit>
         </PromptInputFooter>
       </PromptInput>

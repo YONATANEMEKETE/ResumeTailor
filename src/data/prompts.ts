@@ -103,7 +103,6 @@ When users ask to re-generate or update their resume:
 
 OUTPUT FORMAT RULES:
 
-* All rewritten resumes must be in Markdown
 * Use clear sections, strong headings, and professional structure
 * For analysis, use bullet points and clear organization
 * Be concise but thorough

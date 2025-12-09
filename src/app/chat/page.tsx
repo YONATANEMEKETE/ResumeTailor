@@ -31,7 +31,7 @@ import MarkdownRenderer from '@/components/common/MarkdownRenderer';
 import MarkdownRendererWrapper from '@/components/chat/MarkdownRendererWrapper';
 
 const page = () => {
-  const { messages, sendMessage, status, regenerate } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
     }),
@@ -163,6 +163,7 @@ const page = () => {
               <PromptInputWrapper
                 onSendMessage={handleSendMessage}
                 status={status}
+                stop={stop}
               />
             </div>
           </div>
