@@ -11,18 +11,23 @@ const NavBar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Brand Name */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Link
               href={'/'}
-              className="relative w-32 sm:w-40 md:w-48 h-12 sm:h-14 md:h-16 cursor-pointer"
+              className="cursor-pointer flex items-center gap-x-1.5 sm:gap-x-2"
             >
-              <Image
-                src="/logo-with-text.png"
-                alt="Resume Tailor Logo"
-                fill
-                className="object-contain"
-                priority
-              />
+              <div className="relative size-8 sm:size-10 md:size-11">
+                <Image
+                  src="/logo.png"
+                  alt="Resume Tailor Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <span className="text-lg sm:text-xl md:text-2xl text-foreground font-bold font-lobster">
+                Resume Tailor
+              </span>
             </Link>
           </div>
 

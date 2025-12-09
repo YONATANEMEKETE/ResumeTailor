@@ -1,8 +1,8 @@
-import Cta from '@/components/Landing-page/Cta';
 import Features from '@/components/Landing-page/Features';
 import Footer from '@/components/Landing-page/Footer';
 import Hero from '@/components/Landing-page/Hero';
 import NavBar from '@/components/Landing-page/NavBar';
+import CallToAction from '@/components/Landing-page/call-to-action';
 
 export default function Home() {
   return (
@@ -11,7 +11,8 @@ export default function Home() {
       {/*  */}
       <Hero />
       <Features />
-      <Cta />
+      {/* <Cta /> */}
+      <CallToAction />
       <Footer />
     </main>
   );

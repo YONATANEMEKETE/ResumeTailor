@@ -9,22 +9,22 @@ const Footer = () => {
     {
       name: 'LinkedIn',
       icon: Linkedin,
-      href: 'https://linkedin.com',
+      href: 'https://www.linkedin.com/in/yonatanemekete/',
     },
     {
       name: 'Telegram',
       icon: Send,
-      href: 'https://telegram.org',
+      href: 'https://t.me/yonatanemekete',
     },
     {
       name: 'Instagram',
       icon: Instagram,
-      href: 'https://instagram.com',
+      href: 'https://instagram.com/yonatanemekete',
     },
     {
       name: 'GitHub',
       icon: Github,
-      href: 'https://github.com',
+      href: 'https://github.com/YONATANEMEKETE',
     },
   ];
 
