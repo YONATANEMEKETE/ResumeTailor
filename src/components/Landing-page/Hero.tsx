@@ -101,7 +101,7 @@ const Hero = () => {
 
             {/* CTA Button */}
             <motion.div variants={itemVariants}>
-              <Link href="/auth/signin">
+              <Link href="/chat">
                 <Button
                   size={'lg'}
                   className="from-primary via-primary/80 to-primary bg-linear-to-r bg-size-[200%_auto] hover:bg-position-[right_center] transition-all duration-300 cursor-pointer w-56 h-12 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl hover:scale-105"

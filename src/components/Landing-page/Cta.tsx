@@ -35,7 +35,7 @@ const Cta = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Link href="/auth/signin">
+            <Link href="/chat">
               <Button
                 size="lg"
                 className="from-primary via-primary/80 to-primary bg-linear-to-r bg-size-[200%_auto] hover:bg-position-[right_center] transition-all duration-300 cursor-pointer h-12 px-8 text-base font-semibold shadow-lg hover:shadow-xl hover:scale-105 group"

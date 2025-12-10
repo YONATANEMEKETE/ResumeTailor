@@ -15,7 +15,7 @@ export default function CallToAction() {
           </p>
 
           <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <Link href="/auth/signin">
+            <Link href="/chat">
               <Button
                 size="sm"
                 className="from-primary via-primary/60 to-primary bg-transparent bg-linear-to-r bg-size-[200%_auto] hover:bg-transparent hover:bg-position-[99%_center] cursor-pointer text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 h-8 sm:h-9 md:h-10"

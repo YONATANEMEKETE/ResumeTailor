@@ -62,7 +62,8 @@ const Signin = () => {
       >
         <button
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-background text-foreground border border-input rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 font-medium text-sm focus:ring-2 focus:ring-offset-2 focus:ring-ring outline-none cursor-pointer"
+          disabled={isGoogleLoading}
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-background text-foreground border border-input rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 font-medium text-sm focus:ring-2 focus:ring-offset-2 focus:ring-ring outline-none cursor-pointer disabled:cursor-not-allowed"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path

@@ -29,8 +29,17 @@ import {
 import LoadingResponseIndicator from '@/components/chat/LoadingResponseIndicator';
 import MarkdownRendererWrapper from '@/components/chat/MarkdownRendererWrapper';
 import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 const page = () => {
+  const router = useRouter();
+  const session = authClient.getSession();
+
+  if (!session) {
+    return router.push('/auth/signin');
+  }
+  //
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
