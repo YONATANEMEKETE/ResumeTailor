@@ -1,10 +1,26 @@
 import { motion } from 'motion/react';
-import { Command } from 'lucide-react';
+import { Command, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { authClient } from '@/lib/auth-client';
 
 const Signin = () => {
-  const handleGoogleSignIn = () => {
-    // This will be connected to your auth provider later
-    console.log('Google Sign In clicked');
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsGoogleLoading(true);
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/chat',
+      });
+    } catch (error) {
+      console.log(error);
+      const e = error as Error;
+      toast.error(e.message);
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -66,7 +82,10 @@ const Signin = () => {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          {isGoogleLoading
+            ? 'Signing in with Google...'
+            : 'Sign in with Google'}
+          {isGoogleLoading && <Loader2 className="animate-spin" />}
         </button>
       </motion.div>
     </div>
