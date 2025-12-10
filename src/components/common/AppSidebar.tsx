@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { UserAvatar } from './UserAvatar';
+import { SidebarSearch } from './SidebarSearch';
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -56,7 +57,9 @@ export function AppSidebar() {
           <SidebarTrigger className="cursor-pointer" />
         </motion.div>
       </SidebarHeader>
-      <SidebarContent className="bg-secondary"></SidebarContent>
+      <SidebarContent className="bg-secondary pt-6">
+        {!isCollapsed && <SidebarSearch />}
+      </SidebarContent>
       <SidebarFooter className="px-2 bg-secondary">
         <UserAvatar />
       </SidebarFooter>
