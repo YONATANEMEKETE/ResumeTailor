@@ -5,6 +5,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
@@ -13,6 +14,8 @@ import { motion } from 'motion/react';
 import Image from 'next/image';
 import { UserAvatar } from './UserAvatar';
 import { SidebarSearch } from './SidebarSearch';
+import { Separator } from '../ui/separator';
+import RecentChats from '../chat/RecentConversations';
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -59,6 +62,8 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="bg-secondary pt-6">
         {!isCollapsed && <SidebarSearch />}
+        <Separator />
+        <RecentChats />
       </SidebarContent>
       <SidebarFooter className="px-2 bg-secondary">
         <UserAvatar />
