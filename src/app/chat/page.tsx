@@ -132,7 +132,7 @@ const page = () => {
   };
 
   return (
-    <main className="min-h-screen w-screen bg-secondary/50">
+    <main className="min-h-screen w-full bg-secondary/50 relative">
       <div
         ref={scrollContainerRef}
         className="w-full max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
@@ -241,7 +241,7 @@ const page = () => {
                 onClick={scrollToBottom}
                 size="icon"
                 variant="outline"
-                className="fixed bottom-48 left-1/2 -translate-x-1/2 rounded-full shadow-lg z-50 hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
+                className="absolute bottom-48 left-1/2 -translate-x-1/2 rounded-full shadow-lg z-50 hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
               >
                 <ArrowDownIcon className="size-4" />
               </Button>
