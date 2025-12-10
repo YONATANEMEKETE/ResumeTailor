@@ -20,6 +20,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
 import { LogOut, MoreVertical, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { ToggleTheme } from '../toggle-theme';
+import { Separator } from '../ui/separator';
 
 export function UserAvatar() {
   const { data: session, isPending, error, refetch } = authClient.useSession();
@@ -122,11 +124,9 @@ export function UserAvatar() {
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>change theme</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => handleSignout()}

@@ -33,7 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${lobster.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${lobster.variable} antialiased transition-colors`}
       >
         {children}
         <Toaster />

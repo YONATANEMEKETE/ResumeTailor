@@ -31,6 +31,7 @@ import MarkdownRendererWrapper from '@/components/chat/MarkdownRendererWrapper';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { AnimatedThemeToggler } from '@/components/animated-theme-toggler';
 
 const page = () => {
   const router = useRouter();
@@ -133,6 +134,8 @@ const page = () => {
 
   return (
     <main className="min-h-screen w-full bg-secondary/50 relative">
+      {/* theme toggle */}
+      <AnimatedThemeToggler className="absolute top-4 right-4 z-50" />
       <div
         ref={scrollContainerRef}
         className="w-full max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
