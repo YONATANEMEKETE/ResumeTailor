@@ -134,12 +134,14 @@ const page = () => {
 
   return (
     <main className="min-h-screen w-full bg-secondary/50 relative">
-      {/* theme toggle */}
-      <AnimatedThemeToggler className="absolute top-4 right-4 z-50" />
+      {/*  */}
       <div
         ref={scrollContainerRef}
         className="w-full max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
+        {/* theme toggle */}
+        <AnimatedThemeToggler className="fixed top-4 right-4 z-200" />
+
         {messages.length == 0 && (
           <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
         )}
