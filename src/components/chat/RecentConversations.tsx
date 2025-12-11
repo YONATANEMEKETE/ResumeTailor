@@ -21,6 +21,7 @@ const RecentConversations = ({
     loadConversations,
     setCurrentConversation,
     deleteConversation,
+    updateConversationTitle,
   } = useConversationStore();
 
   // Load conversations on mount
@@ -42,9 +43,8 @@ const RecentConversations = ({
     deleteConversation(id);
   };
 
-  const handleRename = (id: string) => {
-    // TODO: Implement rename dialog
-    console.log('Rename conversation:', id);
+  const handleRename = (id: string, newTitle: string) => {
+    updateConversationTitle(id, newTitle);
   };
 
   return (
@@ -100,7 +100,7 @@ const RecentConversations = ({
               isActive={currentConversationId === conversation.id}
               onClick={() => handleConversationClick(conversation.id)}
               onDelete={() => handleDelete(conversation.id)}
-              onRename={() => handleRename(conversation.id)}
+              onRename={(newTitle) => handleRename(conversation.id, newTitle)}
             />
           ))}
       </div>

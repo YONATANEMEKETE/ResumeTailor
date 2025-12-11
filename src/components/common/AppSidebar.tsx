@@ -49,11 +49,6 @@ export function AppSidebar() {
           <div className="relative size-8">
             <Image src="/logo.png" alt="logo" fill />
           </div>
-          {!isCollapsed && (
-            <span className="font-semibold text-secondary-foreground">
-              Resume Tailor
-            </span>
-          )}
         </a>
 
         <motion.div

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { MoreVertical, Trash2, Pencil } from 'lucide-react';
 import {
@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '../ui/input';
 
 interface ConversationCardProps {
   id: string;
@@ -15,10 +16,11 @@ interface ConversationCardProps {
   isActive?: boolean;
   onClick?: () => void;
   onDelete?: () => void;
-  onRename?: () => void;
+  onRename?: (newTitle: string) => void;
 }
 
 const ConversationCard = ({
+  id,
   title,
   updatedAt,
   isActive = false,
@@ -27,6 +29,42 @@ const ConversationCard = ({
   onRename,
 }: ConversationCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus and select text when entering rename mode
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  // Handle saving the renamed title
+  const handleBlur = () => {
+    const trimmedTitle = editedTitle.trim();
+
+    // Only save if the title has changed
+    if (trimmedTitle && trimmedTitle !== title) {
+      onRename?.(trimmedTitle);
+    } else {
+      // Reset to original title if empty or unchanged
+      setEditedTitle(title);
+    }
+
+    setIsRenaming(false);
+  };
+
+  // Handle Enter key to save
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      inputRef.current?.blur();
+    } else if (e.key === 'Escape') {
+      setEditedTitle(title);
+      setIsRenaming(false);
+    }
+  };
 
   // Format relative time
   const getRelativeTime = (date: Date) => {
@@ -58,9 +96,22 @@ const ConversationCard = ({
         onClick={onClick}
         className="flex-1 flex flex-col items-start min-w-0"
       >
-        <p className="text-sm font-medium truncate w-full text-start">
-          {title}
-        </p>
+        {isRenaming ? (
+          <Input
+            ref={inputRef}
+            type="text"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-medium w-full text-start border border-border rounded  focus:outline-none focus:ring-1 focus:ring-primary focus-visible:ring-0 focus-visible:ring-offset-0 focus-within:border-none bg-accent h-5 pl-0.5 border-none"
+          />
+        ) : (
+          <p className="text-sm font-medium truncate w-full text-start">
+            {title}
+          </p>
+        )}
         <p className="text-xs text-muted-foreground">
           {getRelativeTime(updatedAt)}
         </p>
@@ -82,7 +133,7 @@ const ConversationCard = ({
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              onRename?.();
+              setIsRenaming(true);
             }}
             className="cursor-pointer"
           >
