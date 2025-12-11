@@ -40,14 +40,18 @@ const page = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
-  const session = authClient.getSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
 
   const { currentConversationId, setCurrentConversation, createConversation } =
     useConversationStore();
 
-  if (!session) {
-    return router.push('/auth/signin');
-  }
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isSessionPending && !session) {
+      router.push('/auth/signin');
+    }
+  }, [session, isSessionPending, router]);
 
   // State for loading conversation
   // const [isLoadingConversation, setIsLoadingConversation] = useState(false);
@@ -60,9 +64,19 @@ const page = () => {
   // until the user navigates to a *different* conversation.
   const [chatId, setChatId] = useState(() => idParam || 'new-chat');
 
+  // Ref to track recently created conversation ID to prevent useChat reset
+  const justCreatedConversationIdRef = useRef<string | null>(null);
+
   // Update chatId only when navigating to a different conversation
   useEffect(() => {
     if (idParam && idParam !== chatId) {
+      // If we just created this conversation, don't update chatId to prevent useChat reset
+      if (
+        chatId === 'new-chat' &&
+        idParam === justCreatedConversationIdRef.current
+      ) {
+        return;
+      }
       setChatId(idParam);
     } else if (!idParam && chatId !== 'new-chat') {
       // User navigated to /chat (new chat)
@@ -70,11 +84,40 @@ const page = () => {
     }
   }, [idParam, chatId]);
 
+  // Ref to track current conversation ID for useChat callbacks
+  const currentConversationIdRef = useRef<string | null>(null);
+
+  // Sync ref with state
+  useEffect(() => {
+    currentConversationIdRef.current = currentConversationId;
+  }, [currentConversationId]);
+
   const { messages, sendMessage, status, stop, setMessages } = useChat({
     id: chatId, // Force re-initialization when conversation changes
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
     }),
+    onFinish: ({ message }) => {
+      // Save assistant message when streaming finishes
+      const conversationId = currentConversationIdRef.current;
+      if (conversationId && message.role === 'assistant') {
+        // Fallback to content if parts is not available, or map parts
+        let textContent = '';
+        if (message.parts) {
+          textContent = message.parts
+            .filter((part: any) => part.type === 'text')
+            .map((part: any) => part.text)
+            .join('\n');
+        } else {
+          // Fallback for simple messages
+          textContent = (message as any).content || '';
+        }
+
+        if (textContent) {
+          saveMessageToDB(conversationId, 'assistant', textContent);
+        }
+      }
+    },
   });
 
   // Sync URL ID to global store
@@ -121,9 +164,14 @@ const page = () => {
     } else if (!idParam) {
       // Clear messages if no conversation is selected
       setInitialMessages([]);
-      setMessages([]);
+      if (chatId !== 'new-chat') {
+        // Only clear if we actually switched chats, otherwise we might kill the active stream
+        setMessages([]);
+      } else if (!justCreatedConversationIdRef.current) {
+        setMessages([]);
+      }
     }
-  }, [conversationData, idParam, setMessages]);
+  }, [conversationData, idParam, setMessages, chatId]);
 
   // Update messages when initialMessages changes (after loading from DB)
   useEffect(() => {
@@ -219,24 +267,6 @@ const page = () => {
     }
   };
 
-  // Track the last assistant message to save it when complete
-  useEffect(() => {
-    if (status === 'ready' && messages.length > 0 && currentConversationId) {
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage.role === 'assistant') {
-        // Get the text content from the message parts
-        const textContent = lastMessage.parts
-          .filter((part) => part.type === 'text')
-          .map((part) => part.text)
-          .join('\n');
-
-        if (textContent) {
-          saveMessageToDB(currentConversationId, 'assistant', textContent);
-        }
-      }
-    }
-  }, [status, messages, currentConversationId]);
-
   const handleSendMessage = async (
     message: PromptInputMessage,
     modelId: string
@@ -277,6 +307,10 @@ const page = () => {
 
           if (newConversation) {
             conversationId = newConversation.id;
+            justCreatedConversationIdRef.current = newConversation.id;
+
+            // Immediately update the store so other components know about the new ID
+            setCurrentConversation(newConversation.id);
 
             // Seed the cache with the current messages so React Query doesn't need to fetch immediately
             // This replaces the old ref-based hack
@@ -308,6 +342,16 @@ const page = () => {
       }
     })();
   };
+
+  if (isSessionPending) {
+    return (
+      <div className="min-h-screen w-full bg-secondary/50 flex items-center justify-center">
+        <ClassicLoader />
+      </div>
+    );
+  }
+
+  if (!session) return null;
 
   return (
     <main className="min-h-screen w-full bg-secondary/50 relative">
