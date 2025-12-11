@@ -8,7 +8,11 @@ import { MessageSquare } from 'lucide-react';
 import ConversationCard from './ConversationCard';
 import { useConversationStore } from '@/store/conversationStore';
 
-const RecentConversations = () => {
+const RecentConversations = ({
+  searchQuery = '',
+}: {
+  searchQuery?: string;
+}) => {
   const router = useRouter();
   const {
     conversations,
@@ -23,6 +27,11 @@ const RecentConversations = () => {
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter((conversation) =>
+    conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleConversationClick = (id: string) => {
     setCurrentConversation(id);
@@ -55,7 +64,7 @@ const RecentConversations = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && conversations.length === 0 && (
+        {!isLoading && conversations.length === 0 && !searchQuery && (
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
             <MessageSquare className="h-12 w-12 text-muted-foreground/50 mb-3" />
             <p className="text-sm font-medium text-muted-foreground">
@@ -67,9 +76,22 @@ const RecentConversations = () => {
           </div>
         )}
 
+        {/* No Search Results State */}
+        {!isLoading && searchQuery && filteredConversations.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+            <MessageSquare className="h-12 w-12 text-muted-foreground/50 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">
+              No results found
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-1">
+              Try a different search term
+            </p>
+          </div>
+        )}
+
         {/* Conversations List */}
         {!isLoading &&
-          conversations.map((conversation) => (
+          filteredConversations.map((conversation) => (
             <ConversationCard
               key={conversation.id}
               id={conversation.id}

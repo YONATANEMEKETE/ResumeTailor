@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import {
   Sidebar,
   SidebarContent,
@@ -16,10 +18,17 @@ import { UserAvatar } from './UserAvatar';
 import { SidebarSearch } from './SidebarSearch';
 import { Separator } from '../ui/separator';
 import RecentChats from '../chat/RecentConversations';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useConversationStore } from '@/store/conversationStore';
 
 export function AppSidebar() {
+  const router = useRouter();
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
+  const { setCurrentConversation } = useConversationStore();
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <Sidebar
@@ -61,9 +70,34 @@ export function AppSidebar() {
         </motion.div>
       </SidebarHeader>
       <SidebarContent className="bg-secondary pt-6">
-        {!isCollapsed && <SidebarSearch />}
+        {!isCollapsed && (
+          <SidebarSearch
+            value={searchQuery}
+            onChange={(value) => setSearchQuery(value)}
+          />
+        )}
+        <div
+          className={cn(
+            'px-2 pb-2',
+            isCollapsed && 'px-0 flex justify-center pt-2'
+          )}
+        >
+          <Button
+            onClick={() => {
+              setCurrentConversation(null);
+              router.push('/chat');
+            }}
+            className={cn(
+              'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm cursor-pointer',
+              isCollapsed ? 'h-8 w-8 p-0 rounded-md' : 'w-full justify-start'
+            )}
+          >
+            <Plus className={cn('h-4 w-4', !isCollapsed && 'mr-2')} />
+            {!isCollapsed && <span>New Chat</span>}
+          </Button>
+        </div>
         <Separator />
-        <RecentChats />
+        <RecentChats searchQuery={searchQuery} />
       </SidebarContent>
       <SidebarFooter className="px-2 bg-secondary">
         <UserAvatar />
