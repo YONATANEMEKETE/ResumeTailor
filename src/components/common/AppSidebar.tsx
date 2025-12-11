@@ -79,7 +79,6 @@ export function AppSidebar() {
         >
           <Button
             onClick={() => {
-              setCurrentConversation(null);
               router.push('/chat');
             }}
             className={cn(

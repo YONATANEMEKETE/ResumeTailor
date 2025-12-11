@@ -51,20 +51,33 @@ const page = () => {
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
 
-  // Check URL for conversation ID and load messages
+  const { messages, sendMessage, status, stop, setMessages } = useChat({
+    id: currentConversationId || 'new-chat', // Force re-initialization when conversation changes
+    transport: new DefaultChatTransport({
+      api: '/api/chat-with-ai',
+    }),
+  });
+
+  const idParam = searchParams.get('id');
+
+  // Sync URL ID to global store
   useEffect(() => {
-    const urlConversationId = searchParams.get('id');
+    if (idParam && idParam !== currentConversationId) {
+      setCurrentConversation(idParam);
+    } else if (!idParam && currentConversationId) {
+      setCurrentConversation(null);
+    }
+  }, [idParam, currentConversationId, setCurrentConversation]);
 
-    if (urlConversationId && urlConversationId !== currentConversationId) {
-      setCurrentConversation(urlConversationId);
+  // Load conversation messages based on URL ID
+  useEffect(() => {
+    let active = true;
 
-      // Load conversation messages
+    if (idParam) {
       const loadConversation = async () => {
         setIsLoadingConversation(true);
         try {
-          const response = await fetch(
-            `/api/conversations/${urlConversationId}`
-          );
+          const response = await fetch(`/api/conversations/${idParam}`);
           if (!response.ok) throw new Error('Failed to load conversation');
 
           const data = await response.json();
@@ -83,28 +96,30 @@ const page = () => {
           }));
 
           console.log('Transformed messages:', transformedMessages);
-          setInitialMessages(transformedMessages);
+          if (active) {
+            setInitialMessages(transformedMessages);
+          }
         } catch (error) {
           console.error('Error loading conversation:', error);
         } finally {
-          setIsLoadingConversation(false);
+          if (active) {
+            setIsLoadingConversation(false);
+          }
         }
       };
 
       loadConversation();
-    } else if (!urlConversationId && currentConversationId) {
+    } else {
       // Clear conversation if no ID in URL
-      setCurrentConversation(null);
       setInitialMessages([]);
+      setMessages([]); // Clear messages immediately
+      setIsLoadingConversation(false);
     }
-  }, [searchParams, currentConversationId, setCurrentConversation]);
 
-  const { messages, sendMessage, status, stop, setMessages } = useChat({
-    id: currentConversationId || 'new-chat', // Force re-initialization when conversation changes
-    transport: new DefaultChatTransport({
-      api: '/api/chat-with-ai',
-    }),
-  });
+    return () => {
+      active = false;
+    };
+  }, [idParam, setMessages]);
 
   // Update messages when initialMessages changes (after loading from DB)
   useEffect(() => {

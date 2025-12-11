@@ -38,7 +38,6 @@ const RecentConversations = ({
   );
 
   const handleConversationClick = (id: string) => {
-    setCurrentConversation(id);
     router.push(`/chat?id=${id}`);
   };
 
