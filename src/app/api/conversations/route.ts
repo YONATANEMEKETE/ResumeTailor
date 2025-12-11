@@ -9,34 +9,74 @@ export async function GET(request: NextRequest) {
       headers: request.headers,
     });
 
-    if (!session) {
+    console.log('Session:', session ? 'exists' : 'null');
+    console.log('Session structure:', JSON.stringify(session, null, 2));
+
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    console.log('User ID:', userId);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20');
 
+    console.log('Fetching conversations for user:', userId);
+
+    // Test basic query first
+    // console.log('Testing basic query...');
+    // const testCount = await prisma.conversation.count({
+    //   where: { userId },
+    // });
+    // console.log('User has', testCount, 'total conversations');
+
+    // Simplified query without _count
     const conversations = await prisma.conversation.findMany({
       where: {
-        userId: session.user.id,
+        userId,
         isArchived: false,
       },
       orderBy: {
         updatedAt: 'desc',
       },
       take: limit,
-      include: {
-        _count: {
-          select: { messages: true },
-        },
-      },
+      // Removed _count to test if that's causing the issue
     });
 
-    return NextResponse.json({ conversations });
+    console.log('Found conversations:', conversations.length);
+
+    // Manually add message count for each conversation
+    const conversationsWithCount = await Promise.all(
+      conversations.map(async (conv) => {
+        const messageCount = await prisma.message.count({
+          where: { conversationId: conv.id },
+        });
+        return {
+          ...conv,
+          _count: { messages: messageCount },
+        };
+      })
+    );
+
+    console.log('Added message counts');
+
+    return NextResponse.json({ conversations: conversationsWithCount });
   } catch (error) {
     console.error('Error fetching conversations:', error);
+    console.error(
+      'Error stack:',
+      error instanceof Error ? error.stack : 'No stack'
+    );
     return NextResponse.json(
-      { error: 'Failed to fetch conversations' },
+      {
+        error: 'Failed to fetch conversations',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }

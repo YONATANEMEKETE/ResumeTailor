@@ -49,7 +49,7 @@ const ConversationCard = ({
       className={cn(
         'w-full flex items-start justify-between gap-2 p-2 rounded-lg transition-colors cursor-pointer',
         'hover:bg-accent/50',
-        isActive && 'bg-accent'
+        isActive && 'bg-accent/50'
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -58,7 +58,9 @@ const ConversationCard = ({
         onClick={onClick}
         className="flex-1 flex flex-col items-start min-w-0"
       >
-        <p className="text-sm font-medium truncate w-full">{title}</p>
+        <p className="text-sm font-medium truncate w-full text-start">
+          {title}
+        </p>
         <p className="text-xs text-muted-foreground">
           {getRelativeTime(updatedAt)}
         </p>
@@ -68,7 +70,7 @@ const ConversationCard = ({
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'shrink-0 transition-opacity p-1 hover:bg-accent rounded cursor-pointer',
+              'shrink-0 transition-opacity p-1 hover:bg-accent/50 rounded cursor-pointer',
               isHovered ? 'opacity-100' : 'opacity-0'
             )}
             onClick={(e) => e.stopPropagation()}

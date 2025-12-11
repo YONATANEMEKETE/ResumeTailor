@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 // GET /api/conversations/[id] - Fetch single conversation with messages
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -16,9 +16,11 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     const conversation = await prisma.conversation.findUnique({
       where: {
-        id: params.id,
+        id,
       },
       include: {
         messages: {
@@ -28,6 +30,8 @@ export async function GET(
         },
       },
     });
+
+    console.log('conversation', conversation);
 
     if (!conversation) {
       return NextResponse.json(
@@ -54,7 +58,7 @@ export async function GET(
 // PATCH /api/conversations/[id] - Update conversation
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -65,12 +69,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     const body = await request.json();
     const { title, updatedAt } = body;
 
     // Verify user owns this conversation
     const existing = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { userId: true },
     });
 
@@ -86,7 +92,7 @@ export async function PATCH(
     }
 
     const conversation = await prisma.conversation.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(updatedAt && { updatedAt: new Date(updatedAt) }),
@@ -106,7 +112,7 @@ export async function PATCH(
 // DELETE /api/conversations/[id] - Delete conversation (soft delete)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -117,9 +123,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     // Verify user owns this conversation
     const existing = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { userId: true },
     });
 
@@ -136,7 +144,7 @@ export async function DELETE(
 
     // Soft delete by setting isArchived to true
     await prisma.conversation.update({
-      where: { id: params.id },
+      where: { id },
       data: { isArchived: true },
     });
 

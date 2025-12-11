@@ -30,22 +30,89 @@ import LoadingResponseIndicator from '@/components/chat/LoadingResponseIndicator
 import MarkdownRendererWrapper from '@/components/chat/MarkdownRendererWrapper';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatedThemeToggler } from '@/components/animated-theme-toggler';
+import { useConversationStore } from '@/store/conversationStore';
+import ClassicLoader from '@/components/ui/loader';
 
 const page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const session = authClient.getSession();
+
+  const { currentConversationId, setCurrentConversation, createConversation } =
+    useConversationStore();
 
   if (!session) {
     return router.push('/auth/signin');
   }
-  //
-  const { messages, sendMessage, status, stop } = useChat({
+
+  // State for loading conversation
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
+  const [initialMessages, setInitialMessages] = useState<any[]>([]);
+
+  // Check URL for conversation ID and load messages
+  useEffect(() => {
+    const urlConversationId = searchParams.get('id');
+
+    if (urlConversationId && urlConversationId !== currentConversationId) {
+      setCurrentConversation(urlConversationId);
+
+      // Load conversation messages
+      const loadConversation = async () => {
+        setIsLoadingConversation(true);
+        try {
+          const response = await fetch(
+            `/api/conversations/${urlConversationId}`
+          );
+          if (!response.ok) throw new Error('Failed to load conversation');
+
+          const data = await response.json();
+          const { conversation } = data;
+
+          // Transform messages to useChat format
+          const transformedMessages = conversation.messages.map((msg: any) => ({
+            id: msg.id,
+            role: msg.role,
+            parts: [
+              {
+                type: 'text',
+                text: msg.content,
+              },
+            ],
+          }));
+
+          console.log('Transformed messages:', transformedMessages);
+          setInitialMessages(transformedMessages);
+        } catch (error) {
+          console.error('Error loading conversation:', error);
+        } finally {
+          setIsLoadingConversation(false);
+        }
+      };
+
+      loadConversation();
+    } else if (!urlConversationId && currentConversationId) {
+      // Clear conversation if no ID in URL
+      setCurrentConversation(null);
+      setInitialMessages([]);
+    }
+  }, [searchParams, currentConversationId, setCurrentConversation]);
+
+  const { messages, sendMessage, status, stop, setMessages } = useChat({
+    id: currentConversationId || 'new-chat', // Force re-initialization when conversation changes
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
     }),
   });
+
+  // Update messages when initialMessages changes (after loading from DB)
+  useEffect(() => {
+    if (initialMessages.length > 0) {
+      console.log('Setting messages from initialMessages:', initialMessages);
+      setMessages(initialMessages);
+    }
+  }, [initialMessages, setMessages]);
 
   // Ref for the scrollable container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -112,16 +179,61 @@ const page = () => {
     }
   };
 
-  const handleSendMessage = (message: PromptInputMessage, modelId: string) => {
+  // Save message to database
+  const saveMessageToDB = async (
+    conversationId: string,
+    role: 'user' | 'assistant',
+    content: string
+  ) => {
+    try {
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversationId,
+          role,
+          content,
+        }),
+      });
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  };
+
+  // Track the last assistant message to save it when complete
+  useEffect(() => {
+    if (status === 'ready' && messages.length > 0 && currentConversationId) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant') {
+        // Get the text content from the message parts
+        const textContent = lastMessage.parts
+          .filter((part) => part.type === 'text')
+          .map((part) => part.text)
+          .join('\n');
+
+        if (textContent) {
+          saveMessageToDB(currentConversationId, 'assistant', textContent);
+        }
+      }
+    }
+  }, [status, messages, currentConversationId]);
+
+  const handleSendMessage = async (
+    message: PromptInputMessage,
+    modelId: string
+  ) => {
     const hasText = Boolean(message.text);
     const hasAttachments = Boolean(message.files?.length);
     if (!(hasText || hasAttachments)) {
       return;
     }
 
+    const messageText = message.text || 'Sent with attachments';
+
+    // Send message to AI IMMEDIATELY for instant UI feedback
     sendMessage(
       {
-        text: message.text || 'Sent with attachments',
+        text: messageText,
         files: message.files,
       },
       {
@@ -130,10 +242,51 @@ const page = () => {
         },
       }
     );
+
+    // Handle conversation creation and DB saves asynchronously in the background
+    // This doesn't block the UI or AI response
+    (async () => {
+      try {
+        let conversationId = currentConversationId;
+
+        // If no current conversation, create one
+        if (!conversationId) {
+          // Create conversation with title from first message (first 50 chars)
+          const title =
+            messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
+          const newConversation = await createConversation(title);
+
+          if (newConversation) {
+            conversationId = newConversation.id;
+            // Update URL with new conversation ID
+            router.push(`/chat?id=${newConversation.id}`);
+          }
+        }
+
+        // Save user message to DB (non-blocking)
+        if (conversationId) {
+          await saveMessageToDB(conversationId, 'user', messageText);
+        }
+      } catch (error) {
+        console.error('Error saving message in background:', error);
+        // Message is already sent to AI and displayed, so this is non-critical
+      }
+    })();
   };
 
   return (
     <main className="min-h-screen w-full bg-secondary/50 relative">
+      {/* Loading Overlay */}
+      {isLoadingConversation && (
+        <div className="absolute inset-0 backdrop-blur-sm bg-background/50 z-9999 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <ClassicLoader />
+            <p className="text-sm text-muted-foreground">
+              Loading conversation...
+            </p>
+          </div>
+        </div>
+      )}
       {/*  */}
       <div
         ref={scrollContainerRef}
