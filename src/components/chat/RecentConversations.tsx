@@ -48,6 +48,12 @@ const RecentConversations = ({
   const confirmDelete = () => {
     if (deleteId) {
       console.log('Deleting conversation:', deleteId);
+
+      // If deleting the active conversation, navigate to new chat (removes ID from URL)
+      if (deleteId === currentConversationId) {
+        router.push('/chat');
+      }
+
       deleteConversation(deleteId);
       setDeleteId(null);
     }

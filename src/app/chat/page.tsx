@@ -51,14 +51,37 @@ const page = () => {
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
 
+  const idParam = searchParams.get('id');
+
+  // Track the key for useChat to prevent unnecessary resets during creation
+  // If we are on a "new chat", we keep using "new-chat" ID even after URL updates
+  // until the user navigates to a *different* conversation.
+  const [chatId, setChatId] = useState(() => idParam || 'new-chat');
+
+  // Ref to track locally created conversation IDs to prevent refetching
+  const createdConversationIdRef = useRef<string | null>(null);
+
+  // Update chatId only when navigating to a different conversation
+  useEffect(() => {
+    if (idParam && idParam !== chatId) {
+      // If this ID is the one we just created, DON'T update chatId (keep "new-chat" session alive)
+      if (idParam === createdConversationIdRef.current) {
+        return;
+      }
+      setChatId(idParam);
+    } else if (!idParam && chatId !== 'new-chat') {
+      // User navigated to /chat (new chat)
+      setChatId('new-chat');
+      createdConversationIdRef.current = null;
+    }
+  }, [idParam, chatId]);
+
   const { messages, sendMessage, status, stop, setMessages } = useChat({
-    id: currentConversationId || 'new-chat', // Force re-initialization when conversation changes
+    id: chatId, // Force re-initialization when conversation changes
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
     }),
   });
-
-  const idParam = searchParams.get('id');
 
   // Sync URL ID to global store
   useEffect(() => {
@@ -74,6 +97,12 @@ const page = () => {
     let active = true;
 
     if (idParam) {
+      // Skip fetching if this is the conversation we JUST created locally
+      // because we already have the messages in state.
+      if (idParam === createdConversationIdRef.current) {
+        return;
+      }
+
       const loadConversation = async () => {
         setIsLoadingConversation(true);
         try {
@@ -114,6 +143,7 @@ const page = () => {
       setInitialMessages([]);
       setMessages([]); // Clear messages immediately
       setIsLoadingConversation(false);
+      createdConversationIdRef.current = null;
     }
 
     return () => {
@@ -273,6 +303,7 @@ const page = () => {
 
           if (newConversation) {
             conversationId = newConversation.id;
+            createdConversationIdRef.current = newConversation.id;
             // Update URL with new conversation ID
             router.push(`/chat?id=${newConversation.id}`);
           }

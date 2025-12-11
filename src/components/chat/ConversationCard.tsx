@@ -85,16 +85,16 @@ const ConversationCard = ({
   return (
     <div
       className={cn(
-        'w-full flex items-start justify-between gap-2 p-2 rounded-lg transition-colors cursor-pointer',
+        'w-full flex items-start justify-between gap-2 p-2 py-0.5 rounded-lg transition-colors cursor-pointer relative',
         'hover:bg-accent/50',
-        isActive && 'bg-accent/50'
+        isActive && 'bg-accent/50 ring-1 ring-secondary'
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <button
         onClick={onClick}
-        className="flex-1 flex flex-col items-start min-w-0"
+        className="flex-1 flex flex-col items-start min-w-0 cursor-pointer"
       >
         {isRenaming ? (
           <Input
@@ -121,7 +121,7 @@ const ConversationCard = ({
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'shrink-0 transition-opacity p-1 hover:bg-accent/50 rounded cursor-pointer',
+              'shrink-0 transition-opacity p-1 bg-accent rounded cursor-pointer absolute right-1 top-1',
               isHovered ? 'opacity-100' : 'opacity-0'
             )}
             onClick={(e) => e.stopPropagation()}
