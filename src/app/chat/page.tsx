@@ -7,6 +7,7 @@ import LogoBanner from '@/components/common/LogoBanner';
 import { StripedPattern } from '@/components/magicui/striped-pattern';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useRef, useState, useEffect } from 'react';
 import {
   Conversation,
@@ -37,6 +38,7 @@ import ClassicLoader from '@/components/ui/loader';
 
 const page = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const session = authClient.getSession();
 
@@ -48,7 +50,7 @@ const page = () => {
   }
 
   // State for loading conversation
-  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
+  // const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
 
   const idParam = searchParams.get('id');
@@ -58,21 +60,13 @@ const page = () => {
   // until the user navigates to a *different* conversation.
   const [chatId, setChatId] = useState(() => idParam || 'new-chat');
 
-  // Ref to track locally created conversation IDs to prevent refetching
-  const createdConversationIdRef = useRef<string | null>(null);
-
   // Update chatId only when navigating to a different conversation
   useEffect(() => {
     if (idParam && idParam !== chatId) {
-      // If this ID is the one we just created, DON'T update chatId (keep "new-chat" session alive)
-      if (idParam === createdConversationIdRef.current) {
-        return;
-      }
       setChatId(idParam);
     } else if (!idParam && chatId !== 'new-chat') {
       // User navigated to /chat (new chat)
       setChatId('new-chat');
-      createdConversationIdRef.current = null;
     }
   }, [idParam, chatId]);
 
@@ -92,64 +86,44 @@ const page = () => {
     }
   }, [idParam, currentConversationId, setCurrentConversation]);
 
-  // Load conversation messages based on URL ID
+  const {
+    data: conversationData,
+    isLoading: isLoadingConversation,
+    isFetching,
+  } = useQuery({
+    queryKey: ['conversation', idParam],
+    queryFn: async () => {
+      if (!idParam) return null;
+      const response = await fetch(`/api/conversations/${idParam}`);
+      if (!response.ok) throw new Error('Failed to load conversation');
+      return response.json();
+    },
+    enabled: !!idParam,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+  });
+
+  // When conversation data is loaded or changes, update the messages
   useEffect(() => {
-    let active = true;
-
-    if (idParam) {
-      // Skip fetching if this is the conversation we JUST created locally
-      // because we already have the messages in state.
-      if (idParam === createdConversationIdRef.current) {
-        return;
-      }
-
-      const loadConversation = async () => {
-        setIsLoadingConversation(true);
-        try {
-          const response = await fetch(`/api/conversations/${idParam}`);
-          if (!response.ok) throw new Error('Failed to load conversation');
-
-          const data = await response.json();
-          const { conversation } = data;
-
-          // Transform messages to useChat format
-          const transformedMessages = conversation.messages.map((msg: any) => ({
-            id: msg.id,
-            role: msg.role,
-            parts: [
-              {
-                type: 'text',
-                text: msg.content,
-              },
-            ],
-          }));
-
-          console.log('Transformed messages:', transformedMessages);
-          if (active) {
-            setInitialMessages(transformedMessages);
-          }
-        } catch (error) {
-          console.error('Error loading conversation:', error);
-        } finally {
-          if (active) {
-            setIsLoadingConversation(false);
-          }
-        }
-      };
-
-      loadConversation();
-    } else {
-      // Clear conversation if no ID in URL
+    if (conversationData?.conversation) {
+      const transformedMessages = conversationData.conversation.messages.map(
+        (msg: any) => ({
+          id: msg.id,
+          role: msg.role,
+          parts: [
+            {
+              type: 'text',
+              text: msg.content,
+            },
+          ],
+        })
+      );
+      setInitialMessages(transformedMessages);
+    } else if (!idParam) {
+      // Clear messages if no conversation is selected
       setInitialMessages([]);
-      setMessages([]); // Clear messages immediately
-      setIsLoadingConversation(false);
-      createdConversationIdRef.current = null;
+      setMessages([]);
     }
-
-    return () => {
-      active = false;
-    };
-  }, [idParam, setMessages]);
+  }, [conversationData, idParam, setMessages]);
 
   // Update messages when initialMessages changes (after loading from DB)
   useEffect(() => {
@@ -303,7 +277,22 @@ const page = () => {
 
           if (newConversation) {
             conversationId = newConversation.id;
-            createdConversationIdRef.current = newConversation.id;
+
+            // Seed the cache with the current messages so React Query doesn't need to fetch immediately
+            // This replaces the old ref-based hack
+            queryClient.setQueryData(['conversation', newConversation.id], {
+              conversation: {
+                ...newConversation,
+                messages: [
+                  {
+                    id: 'temp-user-msg', // temporary ID
+                    role: 'user',
+                    content: messageText,
+                  },
+                ],
+              },
+            });
+
             // Update URL with new conversation ID
             router.push(`/chat?id=${newConversation.id}`);
           }
