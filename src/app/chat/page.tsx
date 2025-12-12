@@ -67,6 +67,9 @@ const page = () => {
   // Ref to track recently created conversation ID to prevent useChat reset
   const justCreatedConversationIdRef = useRef<string | null>(null);
 
+  // Ref to track any assistant message that finished streaming *before* the conversation ID was ready
+  const pendingAssistantMessageRef = useRef<string | null>(null);
+
   // Update chatId only when navigating to a different conversation
   useEffect(() => {
     if (idParam && idParam !== chatId) {
@@ -114,7 +117,22 @@ const page = () => {
         }
 
         if (textContent) {
-          saveMessageToDB(conversationId, 'assistant', textContent);
+          if (conversationId) {
+            saveMessageToDB(conversationId, 'assistant', textContent);
+          } else {
+            // Race condition: Stream finished before conversation creation completed
+            // Store it in a ref so handleSendMessage can pick it up once ID is ready
+            pendingAssistantMessageRef.current = textContent;
+          }
+
+          // Invalidate the cache for this conversation so that if the user navigates away
+          // and comes back, we fetch the full history (including this new message) from the DB
+          // instead of relying on the potentially incomplete seed cache.
+          if (conversationId) {
+            queryClient.invalidateQueries({
+              queryKey: ['conversation', conversationId],
+            });
+          }
         }
       }
     },
@@ -142,11 +160,16 @@ const page = () => {
       return response.json();
     },
     enabled: !!idParam,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
   });
 
   // When conversation data is loaded or changes, update the messages
   useEffect(() => {
+    // Prevent overwriting local state with server state immediately after creation
+    // This ensures the active AI stream is not killed by syncing with incomplete DB data
+    if (idParam && justCreatedConversationIdRef.current === idParam) {
+      return;
+    }
+
     if (conversationData?.conversation) {
       const transformedMessages = conversationData.conversation.messages.map(
         (msg: any) => ({
@@ -162,14 +185,15 @@ const page = () => {
       );
       setInitialMessages(transformedMessages);
     } else if (!idParam) {
-      // Clear messages if no conversation is selected
+      // Clear messages if no conversation is selected (New Chat)
       setInitialMessages([]);
-      if (chatId !== 'new-chat') {
-        // Only clear if we actually switched chats, otherwise we might kill the active stream
-        setMessages([]);
-      } else if (!justCreatedConversationIdRef.current) {
-        setMessages([]);
-      }
+
+      // We are in "New Chat" mode, so any previous "just created" context is now irrelevant.
+      // Reset the ref so future navigations behave correctly.
+      justCreatedConversationIdRef.current = null;
+
+      // Always clear messages when on the new chat screen
+      setMessages([]);
     }
   }, [conversationData, idParam, setMessages, chatId]);
 
@@ -335,6 +359,16 @@ const page = () => {
         // Save user message to DB (non-blocking)
         if (conversationId) {
           await saveMessageToDB(conversationId, 'user', messageText);
+
+          // Check if we missed the assistant message completion while creating the conversation
+          if (pendingAssistantMessageRef.current) {
+            await saveMessageToDB(
+              conversationId,
+              'assistant',
+              pendingAssistantMessageRef.current
+            );
+            pendingAssistantMessageRef.current = null;
+          }
         }
       } catch (error) {
         console.error('Error saving message in background:', error);
