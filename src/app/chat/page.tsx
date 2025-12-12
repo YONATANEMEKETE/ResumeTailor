@@ -36,6 +36,8 @@ import { AnimatedThemeToggler } from '@/components/animated-theme-toggler';
 import { useConversationStore } from '@/store/conversationStore';
 import ClassicLoader from '@/components/ui/loader';
 
+import { SidebarTrigger } from '@/components/ui/sidebar';
+
 const page = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -396,6 +398,11 @@ const page = () => {
 
   return (
     <main className="min-h-screen w-full bg-secondary/50 relative">
+      {/* Mobile Sidebar Trigger */}
+      <div className="fixed top-4 left-4 z-3 md:hidden">
+        <SidebarTrigger className="bg-background border border-border shadow-sm cursor-pointer" />
+      </div>
+
       {/* Loading Overlay */}
       {isLoadingConversation && (
         <div className="absolute inset-0 backdrop-blur-sm bg-background/50 z-9999 flex items-center justify-center">
@@ -410,7 +417,7 @@ const page = () => {
       {/*  */}
       <div
         ref={scrollContainerRef}
-        className="w-full max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="w-full max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {/* theme toggle */}
         <AnimatedThemeToggler className="fixed top-4 right-4 z-200" />
@@ -424,7 +431,7 @@ const page = () => {
         ) : (
           <div className="flex-1 flex flex-col w-full">
             {/* banner logo */}
-            <header className="h-12 absolute z-100 inset-x-0 flex items-center justify-center">
+            <header className="h-12 absolute z-2 inset-x-0 flex items-center justify-center">
               <LogoBanner />
             </header>
             {/* Conversation Component */}
@@ -526,7 +533,7 @@ const page = () => {
             )}
 
             {/* Chat Input - Fixed at bottom */}
-            <div className="py-6 absolute bottom-0 w-full max-w-4xl z-10">
+            <div className="py-4 md:py-6 px-4 md:px-0 absolute bottom-0 w-full max-w-xl md:max-w-3xl lg:max-w-4xl z-10">
               <PromptInputWrapper
                 onSendMessage={handleSendMessage}
                 status={status}

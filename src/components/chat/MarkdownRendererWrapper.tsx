@@ -20,7 +20,7 @@ const MarkdownRendererWrapper = ({ markdown, isStreaming }: Props) => {
 
   // Resume markers found - render in sections
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 min-w-0">
       {/* Render content before the resume */}
       {beforeResume.trim() && <MarkdownRenderer markdown={beforeResume} />}
 

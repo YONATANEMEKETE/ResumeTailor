@@ -21,20 +21,18 @@ import RecentChats from '../chat/RecentConversations';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useConversationStore } from '@/store/conversationStore';
 
 export function AppSidebar() {
   const router = useRouter();
-  const { state } = useSidebar();
-  const isCollapsed = state === 'collapsed';
-  const { setCurrentConversation } = useConversationStore();
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === 'collapsed' && !isMobile;
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="bg-secondary border-r border-border"
+      className="bg-secondary border-r border-border z-1000"
     >
       <SidebarHeader
         className={cn(

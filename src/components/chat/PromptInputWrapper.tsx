@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 export interface PromptInputWrapperProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
   status: ChatStatus;
-  stop: () => void;
+  stop?: () => void;
 }
 
 const PromptInputWrapper = ({
@@ -48,22 +48,15 @@ const PromptInputWrapper = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       <PromptInput
         onSubmit={handleSubmit}
-        className="bg-background ring-8 ring-accent shadow-xl rounded-2xl border-none"
+        className="bg-background ring-4 md:ring-8 ring-accent shadow-xl rounded-2xl border-none"
         globalDrop
         maxFiles={1}
         maxFileSize={1024 * 1024 * 5}
         onError={(error) => {
-          toast.error(error.message, {
-            style: {
-              '--normal-bg':
-                'color-mix(in oklab, var(--destructive) 10%, var(--background))',
-              '--normal-text': 'var(--destructive)',
-              '--normal-border': 'var(--destructive)',
-            } as React.CSSProperties,
-          });
+          console.log(error);
         }}
       >
         <PromptInputHeader>
@@ -120,7 +113,7 @@ const PromptInputWrapper = ({
             status={status}
             onClick={() => {
               if (status === 'streaming') {
-                stop();
+                stop?.();
               }
             }}
             className="cursor-pointer"
