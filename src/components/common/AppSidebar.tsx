@@ -21,6 +21,7 @@ import RecentChats from '../chat/RecentConversations';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { UserFeedback } from './UserFeedback';
 
 export function AppSidebar() {
   const router = useRouter();
@@ -91,7 +92,8 @@ export function AppSidebar() {
         <Separator />
         <RecentChats searchQuery={searchQuery} />
       </SidebarContent>
-      <SidebarFooter className="px-2 bg-secondary">
+      <SidebarFooter className="px-2 bg-secondary border-t border-border">
+        {!isCollapsed && <UserFeedback />}
         <UserAvatar />
       </SidebarFooter>
     </Sidebar>
