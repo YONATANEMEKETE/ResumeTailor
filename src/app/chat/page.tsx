@@ -8,7 +8,7 @@ import { StripedPattern } from '@/components/magicui/striped-pattern';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment, useRef, useState, useEffect } from 'react';
+import { Fragment, useRef, useState, useEffect, Suspense } from 'react';
 import {
   Conversation,
   ConversationContent,
@@ -38,7 +38,7 @@ import ClassicLoader from '@/components/ui/loader';
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
-const page = () => {
+const ChatContent = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -547,4 +547,21 @@ const page = () => {
   );
 };
 
-export default page;
+const ChatPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="absolute inset-0 backdrop-blur-sm bg-background/50 z-50 flex items-center justify-center h-screen w-full">
+          <div className="flex flex-col items-center gap-3">
+            <ClassicLoader />
+            <p className="text-sm text-muted-foreground">Loading chat...</p>
+          </div>
+        </div>
+      }
+    >
+      <ChatContent />
+    </Suspense>
+  );
+};
+
+export default ChatPage;
