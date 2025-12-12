@@ -171,18 +171,25 @@ const page = () => {
     }
 
     if (conversationData?.conversation) {
-      const transformedMessages = conversationData.conversation.messages.map(
-        (msg: any) => ({
-          id: msg.id,
-          role: msg.role,
-          parts: [
-            {
-              type: 'text',
-              text: msg.content,
-            },
-          ],
-        })
-      );
+      const serverMessages = conversationData.conversation.messages;
+
+      // Safety check: Don't overwrite local state if we have more messages locally
+      // (e.g., a just-finished AI response that hasn't appeared in the DB fetch yet)
+      // We only sync if server is ahead or equal, or if we are starting from scratch.
+      if (messages.length > serverMessages.length && messages.length > 0) {
+        return;
+      }
+
+      const transformedMessages = serverMessages.map((msg: any) => ({
+        id: msg.id,
+        role: msg.role,
+        parts: [
+          {
+            type: 'text',
+            text: msg.content,
+          },
+        ],
+      }));
       setInitialMessages(transformedMessages);
     } else if (!idParam) {
       // Clear messages if no conversation is selected (New Chat)
