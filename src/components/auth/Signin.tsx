@@ -3,6 +3,7 @@ import { Command, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
+import Image from 'next/image';
 
 const Signin = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -33,8 +34,8 @@ const Signin = () => {
       >
         {/* Mobile Logo (Visible only on mobile) */}
         <div className="lg:hidden flex justify-center mb-8">
-          <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-            <Command className="w-6 h-6" />
+          <div className="relative size-10">
+            <Image src="/logo.png" alt="Logo" fill objectFit="contain" />
           </div>
         </div>
 

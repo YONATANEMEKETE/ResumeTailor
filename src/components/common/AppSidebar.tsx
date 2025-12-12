@@ -32,7 +32,7 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="bg-secondary border-r border-border z-1000"
+      className="bg-secondary border-r border-border"
     >
       <SidebarHeader
         className={cn(
