@@ -4,8 +4,10 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 const Signin = () => {
+  const { theme } = useTheme();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
@@ -35,7 +37,12 @@ const Signin = () => {
         {/* Mobile Logo (Visible only on mobile) */}
         <div className="lg:hidden flex justify-center mb-8">
           <div className="relative size-10">
-            <Image src="/logo.png" alt="Logo" fill objectFit="contain" />
+            <Image
+              src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
+              alt="Logo"
+              fill
+              objectFit="contain"
+            />
           </div>
         </div>
 

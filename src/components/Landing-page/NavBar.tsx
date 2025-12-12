@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
 const NavBar = () => {
+  const { theme } = useTheme();
+
   return (
     <nav className="w-full z-50 fixed top-0 inset-x-0 bg-background/80 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,7 +20,7 @@ const NavBar = () => {
             >
               <div className="relative size-8 sm:size-10 md:size-11">
                 <Image
-                  src="/logo.png"
+                  src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
                   alt="Resume Tailor Logo"
                   fill
                   className="object-contain"

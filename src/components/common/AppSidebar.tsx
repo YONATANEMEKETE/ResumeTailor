@@ -22,8 +22,10 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { UserFeedback } from './UserFeedback';
+import { useTheme } from 'next-themes';
 
 export function AppSidebar() {
+  const { theme } = useTheme();
   const router = useRouter();
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === 'collapsed' && !isMobile;
@@ -46,7 +48,11 @@ export function AppSidebar() {
         <a href="#" className="flex items-center gap-2">
           {/* <Logo className="h-8 w-8" /> */}
           <div className="relative size-8">
-            <Image src="/logo.png" alt="logo" fill />
+            <Image
+              src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
+              alt="logo"
+              fill
+            />
           </div>
         </a>
 

@@ -5,12 +5,10 @@ import { motion } from 'motion/react';
 import { BriefcaseBusiness } from 'lucide-react';
 import ShapeHero from '@/components/kokonutui/shape-hero';
 import Signin from '@/components/auth/Signin';
+import { useTheme } from 'next-themes';
 
 export default function SignInPage() {
-  const handleGoogleSignIn = () => {
-    // This will be connected to your auth provider later
-    console.log('Google Sign In clicked');
-  };
+  const { theme } = useTheme();
 
   return (
     <div className="w-full h-screen grid grid-cols-1 lg:grid-cols-2">
@@ -24,7 +22,12 @@ export default function SignInPage() {
         {/* Logo Area */}
         <div className="relative z-10 flex items-center gap-2">
           <div className="relative size-10">
-            <Image src="/logo.png" alt="Logo" fill objectFit="contain" />
+            <Image
+              src={theme === 'light' ? '/logo-white.png' : '/logo-white.png'}
+              alt="Logo"
+              fill
+              objectFit="contain"
+            />
           </div>
           <span className="text-xl font-bold tracking-tight">
             Resume Tailor
