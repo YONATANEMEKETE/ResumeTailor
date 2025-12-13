@@ -20,6 +20,7 @@ model User {
   accounts      Account[]
   conversations Conversation[]
   feedbacks     Feedback[]
+  completedOnboarding Boolean        @default(false)
 
   @@unique([email])
   @@map("user")
