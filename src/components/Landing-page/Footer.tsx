@@ -19,7 +19,7 @@ const Footer = () => {
     {
       name: 'Instagram',
       icon: Instagram,
-      href: 'https://instagram.com/yonatanemekete',
+      href: 'https://www.instagram.com/yonatane_m/',
     },
     {
       name: 'GitHub',
