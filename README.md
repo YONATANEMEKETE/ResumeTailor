@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResumeTailor
 
-## Getting Started
+> Resume Tailor AI
 
-First, run the development server:
+Resume Tailor AI is a web application that helps job seekers tailor their resumes to specific job descriptions using AI.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Instead of sending the same resume to every role, users can upload their resume, paste a job description, and receive:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A clear analysis of what’s missing or misaligned
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Actionable suggestions to improve their resume
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+A newly generated, tailored version of the resume
 
-## Learn More
+An editable resume experience with export options
 
-To learn more about Next.js, take a look at the following resources:
+The goal is to save time, improve resume relevance, and help candidates apply with more confidence.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✨ Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Upload resume (PDF)
 
-## Deploy on Vercel
+Paste job description
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+AI-powered resume analysis and gap detection
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Tailored resume generation
+
+Editable resume using a rich text editor
+
+Export resume as PDF
+
+Chat-based UI with follow-up questions
+
+Resume regeneration on request
+
+🧠 How It Works
+
+User uploads a resume and pastes a job description
+
+AI analyzes both and explains what should be improved
+
+AI generates a tailored version of the resume
+
+User can edit, regenerate, or export the final version
+
+🛠 Tech Stack
+
+Next.js (App Router)
+
+TypeScript
+
+React
+
+Vercel AI SDK
+
+Tiptap (rich text editor)
+
+React PDF (resume export)
+
+Vercel (deployment)
+
+![License](https://img.shields.io/badge/license-MIT-green) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Language](https://img.shields.io/badge/language-JavaScript-yellow) ![GitHub](https://img.shields.io/badge/GitHub-YONATANEMEKETE/ResumeTailor-black?logo=github) ![Build Status](https://img.shields.io/github/actions/workflow/status/YONATANEMEKETE/ResumeTailor/ci.yml?branch=main)
+
+## ℹ️ Project Information
+
+- **👤 Author:** YONATANEMEKETE
+- **📦 Version:** 1.0.0
+- **📄 License:** MIT
+- **🌐 Website:** [https://resume-tailor-zeta.vercel.app](https://resume-tailor-zeta.vercel.app)
+- **📂 Repository:** [https://github.com/YONATANEMEKETE/ResumeTailor](https://github.com/YONATANEMEKETE/ResumeTailor)
+
