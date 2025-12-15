@@ -6,6 +6,7 @@ import { BriefcaseBusiness } from 'lucide-react';
 import ShapeHero from '@/components/kokonutui/shape-hero';
 import Signin from '@/components/auth/Signin';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 
 export default function SignInPage() {
   const { theme } = useTheme();
@@ -20,7 +21,10 @@ export default function SignInPage() {
         </div>
 
         {/* Logo Area */}
-        <div className="relative z-10 flex items-center gap-2">
+        <Link
+          href="/"
+          className="relative z-10 flex items-center gap-2 cursor-pointer"
+        >
           <div className="relative size-10">
             <Image
               src={theme === 'light' ? '/logo-white.png' : '/logo-white.png'}
@@ -32,7 +36,7 @@ export default function SignInPage() {
           <span className="text-xl font-bold tracking-tight">
             Resume Tailor
           </span>
-        </div>
+        </Link>
 
         {/* Hero Content */}
         <div className="relative z-10 max-w-lg">
