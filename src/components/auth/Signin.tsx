@@ -15,7 +15,7 @@ const Signin = () => {
       setIsGoogleLoading(true);
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/chat',
+        callbackURL: '/chat/new',
       });
     } catch (error) {
       console.log(error);

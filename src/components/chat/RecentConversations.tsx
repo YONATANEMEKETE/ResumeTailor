@@ -38,7 +38,7 @@ const RecentConversations = ({
   );
 
   const handleConversationClick = (id: string) => {
-    router.push(`/chat?id=${id}`);
+    router.push(`/chat/${id}`);
   };
 
   const handleDelete = (id: string) => {
@@ -51,7 +51,7 @@ const RecentConversations = ({
 
       // If deleting the active conversation, navigate to new chat (removes ID from URL)
       if (deleteId === currentConversationId) {
-        router.push('/chat');
+        router.push('/chat/new');
       }
 
       deleteConversation(deleteId);

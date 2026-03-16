@@ -13,7 +13,7 @@ export default async function Home() {
   });
 
   if (session) {
-    return redirect('/chat');
+    return redirect('/chat/new');
   }
 
   return (

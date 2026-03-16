@@ -84,7 +84,7 @@ export function AppSidebar() {
         >
           <Button
             onClick={() => {
-              router.push('/chat');
+              router.push('/chat/new');
             }}
             className={cn(
               'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm cursor-pointer',
