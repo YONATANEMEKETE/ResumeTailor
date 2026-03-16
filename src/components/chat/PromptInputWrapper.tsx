@@ -31,12 +31,14 @@ export interface PromptInputWrapperProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
   status: ChatStatus;
   stop?: () => void;
+  submitKey?: 'enter' | 'mod+enter' | 'none';
 }
 
 const PromptInputWrapper = ({
   onSendMessage,
   status,
   stop,
+  submitKey,
 }: PromptInputWrapperProps) => {
   const [text, setText] = useState<string>('');
   const [selectedModelId, setSelectedModelId] = useState<string>(models[0].id);
@@ -72,6 +74,7 @@ const PromptInputWrapper = ({
             onChange={(e) => setText(e.target.value)}
             ref={textAreaRef}
             placeholder="Paste the Job Description or Ask any questions"
+            submitKey={submitKey}
           />
         </PromptInputBody>
         <PromptInputFooter>

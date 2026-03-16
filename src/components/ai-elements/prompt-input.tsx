@@ -807,12 +807,21 @@ export const PromptInputBody = ({
 
 export type PromptInputTextareaProps = ComponentProps<
   typeof InputGroupTextarea
->;
+> & {
+  /**
+   * Controls the submit hotkey while focused in the textarea.
+   * - "enter": Enter submits, Shift+Enter inserts newline (default)
+   * - "mod+enter": Ctrl/Cmd+Enter submits, Enter inserts newline
+   * - "none": never submit from the textarea
+   */
+  submitKey?: 'enter' | 'mod+enter' | 'none';
+};
 
 export const PromptInputTextarea = ({
   onChange,
   className,
   placeholder = 'What would you like to know?',
+  submitKey = 'enter',
   ...props
 }: PromptInputTextareaProps) => {
   const controller = useOptionalPromptInputController();
@@ -824,9 +833,18 @@ export const PromptInputTextarea = ({
       if (isComposing || e.nativeEvent.isComposing) {
         return;
       }
+      if (submitKey === 'none') {
+        return;
+      }
+
       if (e.shiftKey) {
         return;
       }
+
+      if (submitKey === 'mod+enter' && !(e.metaKey || e.ctrlKey)) {
+        return;
+      }
+
       e.preventDefault();
 
       // Check if the submit button is disabled before submitting

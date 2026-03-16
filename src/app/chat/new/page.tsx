@@ -55,7 +55,11 @@ const ChatNewPage = () => {
       <div className="w-full max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <AnimatedThemeToggler className="fixed top-4 right-4 z-200" />
         <StripedPattern className="mask-[radial-gradient(300px_circle_at_center,white,transparent)] opacity-50" />
-        <InitialChatView onSendMessage={handleSendMessage} status={readyStatus} />
+        <InitialChatView
+          onSendMessage={handleSendMessage}
+          status={readyStatus}
+          submitKey="mod+enter"
+        />
       </div>
     </main>
   );

@@ -33,8 +33,9 @@ import { DefaultChatTransport } from 'ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDownIcon, CopyIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { Fragment, useEffect, useRef, useState, useCallback } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input';
+import { nanoid } from 'nanoid';
 
 const ChatRoomPage = () => {
   const router = useRouter();
@@ -47,14 +48,39 @@ const ChatRoomPage = () => {
     authClient.useSession();
 
   const { setCurrentConversation } = useConversationStore();
-  const { consumePendingMessage } = usePendingMessageStore();
+  const pendingMessage = usePendingMessageStore((s) =>
+    conversationId ? s.pendingByConversationId[conversationId] : undefined
+  );
+  const consumePendingMessage = usePendingMessageStore(
+    (s) => s.consumePendingMessage
+  );
 
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
   const [chatError, setChatError] = useState<string | null>(null);
+  const [isNewChatFlow, setIsNewChatFlow] = useState(() =>
+    Boolean(pendingMessage)
+  );
+  const [seedUserMessageText, setSeedUserMessageText] = useState<string | null>(
+    null
+  );
   const lastUserMessageRef = useRef<{
     message: PromptInputMessage;
     modelId: string;
   } | null>(null);
+
+  const extractText = useCallback((m: any): string => {
+    if (Array.isArray(m?.parts)) {
+      return (
+        m.parts
+          .filter((p: any) => p?.type === 'text' && typeof p?.text === 'string')
+          .map((p: any) => p.text)
+          .join('\n') || ''
+      );
+    }
+    if (typeof m?.content === 'string') return m.content;
+    if (typeof m?.text === 'string') return m.text;
+    return '';
+  }, []);
 
   useEffect(() => {
     if (!isSessionPending && !session) {
@@ -67,6 +93,14 @@ const ChatRoomPage = () => {
       setCurrentConversation(conversationId);
     }
   }, [conversationId, setCurrentConversation]);
+
+  useEffect(() => {
+    if (pendingMessage) {
+      setIsNewChatFlow(true);
+    }
+  }, [pendingMessage]);
+
+  const isNewChatFlowActive = isNewChatFlow || Boolean(pendingMessage);
 
   const { messages, sendMessage, status, stop, setMessages } = useChat({
     id: conversationId || 'unknown-conversation',
@@ -105,6 +139,39 @@ const ChatRoomPage = () => {
     setChatError(null);
   }, [conversationId, setMessages]);
 
+  // If sendMessage() also injects a user message, drop our temporary optimistic one.
+  useEffect(() => {
+    if (messages.length < 2) return;
+
+    let lastUserIndex = -1;
+    let prevUserIndex = -1;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if ((messages[i] as any)?.role !== 'user') continue;
+      if (lastUserIndex === -1) lastUserIndex = i;
+      else {
+        prevUserIndex = i;
+        break;
+      }
+    }
+    if (lastUserIndex === -1 || prevUserIndex === -1) return;
+
+    const last = messages[lastUserIndex] as any;
+    const prev = messages[prevUserIndex] as any;
+    const lastText = extractText(last);
+    const prevText = extractText(prev);
+    if (!lastText || lastText !== prevText) return;
+
+    const lastIsTemp = typeof last.id === 'string' && last.id.startsWith('temp-');
+    const prevIsTemp = typeof prev.id === 'string' && prev.id.startsWith('temp-');
+    if (!lastIsTemp && !prevIsTemp) return;
+
+    setMessages((current) => {
+      if (current.length < 2) return current;
+      const tempIndex = lastIsTemp ? lastUserIndex : prevUserIndex;
+      return current.filter((_, idx) => idx !== tempIndex);
+    });
+  }, [messages, extractText, setMessages]);
+
   const {
     data: conversationData,
     isLoading: isLoadingConversation,
@@ -122,9 +189,13 @@ const ChatRoomPage = () => {
   useEffect(() => {
     if (conversationData?.conversation) {
       const serverMessages = conversationData.conversation.messages;
-      if (messages.length > serverMessages.length && messages.length > 0) {
-        return;
-      }
+
+      // While the assistant is responding, never let the server snapshot override
+      // the live client list (new-chat flow depends on this).
+      if (status === 'submitted' || status === 'streaming') return;
+
+      // Never replace the client list with a shorter server list (avoids "assistant disappears").
+      if (messages.length > 0 && serverMessages.length < messages.length) return;
 
       const transformedMessages = serverMessages.map((msg: any) => ({
         id: msg.id,
@@ -136,9 +207,20 @@ const ChatRoomPage = () => {
           },
         ],
       }));
+
+      // In the new-chat redirect flow, wait until the DB has both user+assistant
+      // before hydrating, otherwise we'd wipe the streaming assistant message.
+      if (isNewChatFlowActive) {
+        const lastServerRole = serverMessages.at(-1)?.role;
+        if (serverMessages.length < 2 || lastServerRole !== 'assistant') {
+          return;
+        }
+        setIsNewChatFlow(false);
+      }
+
       setInitialMessages(transformedMessages);
     }
-  }, [conversationData, messages.length]);
+  }, [conversationData, messages.length, status, isNewChatFlowActive]);
 
   useEffect(() => {
     if (initialMessages.length > 0) {
@@ -253,6 +335,25 @@ const ChatRoomPage = () => {
       setChatError(null);
       lastUserMessageRef.current = { message, modelId };
 
+      // Optimistically show the user message immediately (new-chat flow otherwise
+      // shows only the assistant while the DB catches up).
+      setMessages((prev) => {
+        const last = prev.at(-1) as any;
+        if (last?.role === 'user' && extractText(last) === messageText) {
+          return prev;
+        }
+        return prev.concat({
+          id: `temp-${nanoid()}`,
+          role: 'user',
+          parts: [
+            {
+              type: 'text',
+              text: messageText,
+            },
+          ],
+        });
+      });
+
       sendMessage(
         {
           text: messageText,
@@ -266,17 +367,66 @@ const ChatRoomPage = () => {
       );
 
       await saveMessageToDB(conversationId, 'user', messageText);
+      queryClient.invalidateQueries({
+        queryKey: ['conversation', conversationId],
+      });
     },
-    [conversationId, sendMessage]
+    [conversationId, sendMessage, queryClient, setMessages, extractText]
   );
 
   useEffect(() => {
     if (!conversationId) return;
     const pending = consumePendingMessage(conversationId);
     if (pending) {
+      const pendingText =
+        pending.message.text ||
+        (pending.message.files?.length ? 'Sent with attachments' : '');
+      if (pendingText) {
+        setSeedUserMessageText(pendingText);
+      }
       handleSendMessage(pending.message, pending.modelId);
     }
   }, [conversationId, consumePendingMessage, handleSendMessage]);
+
+  const shouldInjectSeedUserMessage = useMemo(() => {
+    if (!seedUserMessageText) return false;
+    const hasUser = messages.some(
+      (m: any) => m?.role === 'user' && extractText(m) === seedUserMessageText
+    );
+    return !hasUser;
+  }, [messages, extractText, seedUserMessageText]);
+
+  useEffect(() => {
+    if (!seedUserMessageText) return;
+    if (!shouldInjectSeedUserMessage) {
+      setSeedUserMessageText(null);
+    }
+  }, [seedUserMessageText, shouldInjectSeedUserMessage]);
+
+  const displayMessages = useMemo(() => {
+    if (!shouldInjectSeedUserMessage || !conversationId || !seedUserMessageText) {
+      return messages;
+    }
+
+    return [
+      {
+        id: `seed-user-${conversationId}`,
+        role: 'user' as const,
+        parts: [
+          {
+            type: 'text' as const,
+            text: seedUserMessageText,
+          },
+        ],
+      },
+      ...messages,
+    ];
+  }, [
+    shouldInjectSeedUserMessage,
+    conversationId,
+    seedUserMessageText,
+    messages,
+  ]);
 
   const handleRetry = () => {
     if (!lastUserMessageRef.current) return;
@@ -300,7 +450,7 @@ const ChatRoomPage = () => {
         <SidebarTrigger className="bg-background border border-border shadow-sm cursor-pointer" />
       </div>
 
-      {isLoadingConversation && (
+      {isLoadingConversation && !isNewChatFlowActive && (
         <div className="absolute inset-0 backdrop-blur-sm bg-background/50 z-9999 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <ClassicLoader />
@@ -325,9 +475,31 @@ const ChatRoomPage = () => {
             <div className="min-h-screen pt-20 p-4 space-y-8 pb-48">
               <Conversation className="relative">
                 <ConversationContent>
-                  {messages.map((message) => (
+                  {displayMessages.map((message) => (
                     <Fragment key={message.id}>
-                      {message.parts.map((part, index) => {
+                      {(() => {
+                        const parts =
+                          Array.isArray((message as any).parts) &&
+                          (message as any).parts.length > 0
+                            ? (message as any).parts
+                            : (() => {
+                                const content =
+                                  typeof (message as any).content === 'string'
+                                    ? (message as any).content
+                                    : typeof (message as any).text === 'string'
+                                      ? (message as any).text
+                                      : '';
+                                return content
+                                  ? [
+                                      {
+                                        type: 'text',
+                                        text: content,
+                                      },
+                                    ]
+                                  : [];
+                              })();
+
+                        return parts.map((part: any, index: number) => {
                         switch (part.type) {
                           case 'text':
                             return (
@@ -377,7 +549,7 @@ const ChatRoomPage = () => {
                                 </Message>
                                 {chatError &&
                                   message.role === 'user' &&
-                                  message.id === messages.at(-1)?.id && (
+                                  message.id === displayMessages.at(-1)?.id && (
                                     <div className="rounded-xl border border-destructive/40 bg-destructive/10 text-destructive px-4 py-3 flex items-start justify-between gap-3">
                                       <div className="text-sm">
                                         <div className="font-medium">
@@ -408,15 +580,15 @@ const ChatRoomPage = () => {
                             );
                           case 'reasoning':
                             return (
-                              <Reasoning
-                                key={`${message.id}-${index}`}
-                                className="w-full"
-                                isStreaming={
-                                  status === 'streaming' &&
-                                  index === message.parts.length - 1 &&
-                                  message.id === messages.at(-1)?.id
-                                }
-                              >
+                                <Reasoning
+                                  key={`${message.id}-${index}`}
+                                  className="w-full"
+                                  isStreaming={
+                                    status === 'streaming' &&
+                                    index === parts.length - 1 &&
+                                    message.id === displayMessages.at(-1)?.id
+                                  }
+                                >
                                 <ReasoningTrigger />
                                 <ReasoningContent>
                                   {part.text}
@@ -426,7 +598,8 @@ const ChatRoomPage = () => {
                           default:
                             return null;
                         }
-                      })}
+                        });
+                      })()}
                     </Fragment>
                   ))}
                   {status === 'submitted' && (

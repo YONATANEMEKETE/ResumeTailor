@@ -7,9 +7,14 @@ import { ChatStatus } from 'ai';
 interface InitialChatViewProps {
   onSendMessage: (message: PromptInputMessage, modelId: string) => void;
   status: ChatStatus;
+  submitKey?: 'enter' | 'mod+enter' | 'none';
 }
 
-const InitialChatView = ({ onSendMessage, status }: InitialChatViewProps) => {
+const InitialChatView = ({
+  onSendMessage,
+  status,
+  submitKey,
+}: InitialChatViewProps) => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
       <div className="flex flex-col items-center space-y-6 md:space-y-8 w-full">
@@ -39,7 +44,11 @@ const InitialChatView = ({ onSendMessage, status }: InitialChatViewProps) => {
 
         {/* Chat Input - Centered */}
         <div className="w-full pt-8 md:pt-16">
-          <PromptInputWrapper onSendMessage={onSendMessage} status={status} />
+          <PromptInputWrapper
+            onSendMessage={onSendMessage}
+            status={status}
+            submitKey={submitKey}
+          />
         </div>
       </div>
     </div>
