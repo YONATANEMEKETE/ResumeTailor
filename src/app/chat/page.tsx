@@ -58,6 +58,7 @@ const ChatContent = () => {
   // State for loading conversation
   // const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
+  const [chatError, setChatError] = useState<string | null>(null);
 
   const idParam = searchParams.get('id');
 
@@ -71,6 +72,10 @@ const ChatContent = () => {
 
   // Ref to track any assistant message that finished streaming *before* the conversation ID was ready
   const pendingAssistantMessageRef = useRef<string | null>(null);
+  const lastUserMessageRef = useRef<{
+    message: PromptInputMessage;
+    modelId: string;
+  } | null>(null);
 
   // Update chatId only when navigating to a different conversation
   useEffect(() => {
@@ -102,6 +107,10 @@ const ChatContent = () => {
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
     }),
+    onError: (error) => {
+      console.error('Chat error:', error);
+      setChatError("We couldn't complete your request.");
+    },
     onFinish: ({ message }) => {
       // Save assistant message when streaming finishes
       const conversationId = currentConversationIdRef.current;
@@ -312,6 +321,10 @@ const ChatContent = () => {
 
     const messageText = message.text || 'Sent with attachments';
 
+    // Clear any previous error and store for retry
+    setChatError(null);
+    lastUserMessageRef.current = { message, modelId };
+
     // Send message to AI IMMEDIATELY for instant UI feedback
     sendMessage(
       {
@@ -386,6 +399,12 @@ const ChatContent = () => {
     })();
   };
 
+  const handleRetry = () => {
+    if (!lastUserMessageRef.current) return;
+    const { message, modelId } = lastUserMessageRef.current;
+    handleSendMessage(message, modelId);
+  };
+
   if (isSessionPending) {
     return (
       <div className="min-h-screen w-full bg-secondary/50 flex items-center justify-center">
@@ -445,18 +464,15 @@ const ChatContent = () => {
                           switch (part.type) {
                             case 'text':
                               return (
-                                <Message
-                                  key={`${message.id}-${index}`}
-                                  from={message.role}
-                                  className="max-w-full"
-                                >
-                                  <MessageContent
-                                    className={`${
-                                      message.role === 'assistant'
-                                        ? 'w-full max-w-full'
-                                        : ''
-                                    }`}
-                                  >
+                                <div key={`${message.id}-${index}`} className="space-y-2">
+                                  <Message from={message.role} className="max-w-full">
+                                    <MessageContent
+                                      className={`${
+                                        message.role === 'assistant'
+                                          ? 'w-full max-w-full'
+                                          : ''
+                                      }`}
+                                    >
                                     {/* Use MarkdownRendererWrapper for assistant messages to detect and display resume content */}
                                     {message.role === 'user' ? (
                                       <MessageResponse>
@@ -470,11 +486,11 @@ const ChatContent = () => {
                                     )}
                                   </MessageContent>
 
-                                  <MessageActions
-                                    className={`${
-                                      message.role === 'user' && 'justify-end'
-                                    }`}
-                                  >
+                                    <MessageActions
+                                      className={`${
+                                        message.role === 'user' && 'justify-end'
+                                      }`}
+                                    >
                                     <MessageAction
                                       onClick={() =>
                                         navigator.clipboard.writeText(part.text)
@@ -485,8 +501,38 @@ const ChatContent = () => {
                                     >
                                       <CopyIcon className="size-3" />
                                     </MessageAction>
-                                  </MessageActions>
-                                </Message>
+                                    </MessageActions>
+                                  </Message>
+                                  {chatError &&
+                                    message.role === 'user' &&
+                                    message.id === messages.at(-1)?.id && (
+                                      <div className="rounded-xl border border-destructive/40 bg-destructive/10 text-destructive px-4 py-3 flex items-start justify-between gap-3">
+                                        <div className="text-sm">
+                                          <div className="font-medium">
+                                            {chatError}
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={handleRetry}
+                                            className="cursor-pointer"
+                                          >
+                                            Try again
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => setChatError(null)}
+                                            className="cursor-pointer"
+                                          >
+                                            Dismiss
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                </div>
                               );
                             case 'reasoning':
                               return (
