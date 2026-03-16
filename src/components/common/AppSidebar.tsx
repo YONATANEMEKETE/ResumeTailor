@@ -16,7 +16,6 @@ import { motion } from 'motion/react';
 import Image from 'next/image';
 import { UserAvatar } from './UserAvatar';
 import { SidebarSearch } from './SidebarSearch';
-import { Separator } from '../ui/separator';
 import RecentChats from '../chat/RecentConversations';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -35,41 +34,69 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="bg-secondary border-r border-border"
+      className={cn(
+        'border-sidebar-border/70 bg-sidebar/95 supports-[backdrop-filter]:bg-sidebar/80 supports-[backdrop-filter]:backdrop-blur-xl',
+        'shadow-[inset_-1px_0_0_hsl(var(--sidebar-border))]'
+      )}
     >
       <SidebarHeader
         className={cn(
-          'flex md:pt-3.5 bg-secondary',
+          'flex md:pt-3.5 bg-transparent',
           isCollapsed
-            ? 'flex-row items-center justify-between gap-y-4 md:flex-col md:items-start md:justify-start'
+            ? 'flex-row items-center justify-between gap-y-4 md:flex-col md:items-center md:justify-center'
             : 'flex-row items-center justify-between'
         )}
       >
-        <a href="#" className="flex items-center gap-2">
+        <a
+          href="#"
+          className={cn(
+            'flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors',
+            'hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
+            isCollapsed && 'md:w-full md:justify-center md:px-0'
+          )}
+        >
           {/* <Logo className="h-8 w-8" /> */}
-          <div className="relative size-8">
+          <div className="relative size-8 shrink-0 rounded-lg bg-sidebar-accent/50 ring-1 ring-sidebar-border/60 overflow-hidden">
             <Image
               src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
               alt="logo"
               fill
             />
           </div>
+          {!isCollapsed && (
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-semibold tracking-tight">
+                ResumeTailor
+              </span>
+              <span className="text-[11px] text-sidebar-foreground/60">
+                Chats and projects
+              </span>
+            </div>
+          )}
         </a>
 
         <motion.div
           key={isCollapsed ? 'header-collapsed' : 'header-expanded'}
           className={cn(
             'flex items-center gap-2',
-            isCollapsed ? 'flex-row md:flex-col-reverse' : 'flex-row'
+            isCollapsed
+              ? 'flex-row md:flex-col-reverse md:w-full md:justify-center'
+              : 'flex-row'
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <SidebarTrigger className="cursor-pointer" />
+          <SidebarTrigger className="cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
         </motion.div>
       </SidebarHeader>
-      <SidebarContent className="bg-secondary pt-6">
+      <SidebarSeparator className={cn(isCollapsed && 'mx-auto w-8')} />
+      <SidebarContent
+        className={cn(
+          'bg-transparent pt-4',
+          isCollapsed && 'items-center gap-3 pt-3'
+        )}
+      >
         {!isCollapsed && (
           <SidebarSearch
             value={searchQuery}
@@ -87,18 +114,26 @@ export function AppSidebar() {
               router.push('/chat/new');
             }}
             className={cn(
-              'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm cursor-pointer',
-              isCollapsed ? 'h-8 w-8 p-0 rounded-md' : 'w-full justify-start'
+              'cursor-pointer shadow-sm',
+              'bg-gradient-to-b from-sidebar-primary to-sidebar-primary/90 text-sidebar-primary-foreground',
+              'ring-1 ring-sidebar-border/40 hover:ring-sidebar-ring/60',
+              'hover:brightness-[1.02] active:brightness-[0.98]',
+              isCollapsed
+                ? 'h-9 w-9 p-0 rounded-xl'
+                : 'w-full justify-start rounded-xl'
             )}
           >
             <Plus className={cn('h-4 w-4', !isCollapsed && 'mr-2')} />
             {!isCollapsed && <span>New Chat</span>}
           </Button>
         </div>
-        <Separator />
+        <SidebarSeparator className={cn(isCollapsed && 'mx-auto w-8')} />
         <RecentChats searchQuery={searchQuery} />
       </SidebarContent>
-      <SidebarFooter className="px-2 bg-secondary border-t border-border">
+      <SidebarSeparator className={cn(isCollapsed && 'mx-auto w-8')} />
+      <SidebarFooter
+        className={cn('bg-transparent', isCollapsed ? 'px-0 items-center' : 'px-2')}
+      >
         {!isCollapsed && <UserFeedback />}
         <UserAvatar />
       </SidebarFooter>

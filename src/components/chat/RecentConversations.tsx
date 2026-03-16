@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SidebarGroup, SidebarGroupLabel } from '../ui/sidebar';
 import { Skeleton } from '../ui/skeleton';
@@ -20,7 +20,6 @@ const RecentConversations = ({
     isLoading,
     currentConversationId,
     loadConversations,
-    setCurrentConversation,
     deleteConversation,
     updateConversationTitle,
   } = useConversationStore();
@@ -33,9 +32,13 @@ const RecentConversations = ({
   }, [loadConversations]);
 
   // Filter conversations based on search query
-  const filteredConversations = conversations.filter((conversation) =>
-    conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredConversations = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return conversations;
+    return conversations.filter((conversation) =>
+      conversation.title.toLowerCase().includes(q)
+    );
+  }, [conversations, searchQuery]);
 
   const handleConversationClick = (id: string) => {
     router.push(`/chat/${id}`);
@@ -66,7 +69,9 @@ const RecentConversations = ({
   return (
     <>
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-[11px] tracking-wide uppercase">
+          Recent Chats
+        </SidebarGroupLabel>
         <div className="space-y-1 px-2">
           {/* Loading State */}
           {isLoading && (
@@ -111,7 +116,6 @@ const RecentConversations = ({
             filteredConversations.map((conversation) => (
               <ConversationCard
                 key={conversation.id}
-                id={conversation.id}
                 title={conversation.title}
                 updatedAt={new Date(conversation.updatedAt)}
                 isActive={currentConversationId === conversation.id}
