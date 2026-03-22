@@ -1,25 +1,21 @@
 import React from 'react';
-import { Linkedin, Send, Instagram, Github } from 'lucide-react';
+import { Linkedin, Send, Instagram, Github, Twitter } from 'lucide-react';
 import Link from 'next/link';
+import { AppLogo } from '@/components/common/AppLogo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
     {
+      name: 'Twitter',
+      icon: Twitter,
+      href: 'https://twitter.com/',
+    },
+    {
       name: 'LinkedIn',
       icon: Linkedin,
       href: 'https://www.linkedin.com/in/',
-    },
-    {
-      name: 'Telegram',
-      icon: Send,
-      href: 'https://t.me/',
-    },
-    {
-      name: 'Instagram',
-      icon: Instagram,
-      href: 'https://www.instagram.com/',
     },
     {
       name: 'GitHub',
@@ -29,15 +25,18 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-border bg-white text-zinc-600">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="flex flex-col items-center justify-center space-y-6">
           {/* App Name */}
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-foreground">Resume Tailor</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              AI-Powered Resume Optimization
-            </p>
+          <div className="flex flex-col items-center gap-2">
+            <AppLogo size={32} className="" />
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-black">Resume Tailor</h3>
+              <p className="text-sm text-zinc-500 mt-1">
+                AI-Powered Resume Optimization
+              </p>
+            </div>
           </div>
 
           {/* Social Media Links */}
@@ -50,7 +49,7 @@ const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-muted hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
+                  className="flex items-center justify-center w-10 h-10 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-black transition-all duration-300"
                   aria-label={social.name}
                 >
                   <Icon className="w-5 h-5" />
@@ -61,7 +60,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-zinc-500">
               © {currentYear} Resume Tailor. All rights reserved.
             </p>
           </div>
