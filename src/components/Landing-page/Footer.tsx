@@ -25,15 +25,15 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t border-border bg-white text-zinc-600">
+    <footer className="border-t border-border bg-background text-muted-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="flex flex-col items-center justify-center space-y-6">
           {/* App Name */}
           <div className="flex flex-col items-center gap-2">
             <AppLogo size={32} className="" />
             <div className="text-center">
-              <h3 className="text-xl font-bold text-black">Resume Tailor</h3>
-              <p className="text-sm text-zinc-500 mt-1">
+              <h3 className="text-xl font-bold text-foreground">Resume Tailor</h3>
+              <p className="text-sm text-muted-foreground mt-1">
                 AI-Powered Resume Optimization
               </p>
             </div>
@@ -49,7 +49,7 @@ const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-10 h-10 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-black transition-all duration-300"
+                  className="flex items-center justify-center w-10 h-10 rounded-md bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground transition-all duration-300"
                   aria-label={social.name}
                 >
                   <Icon className="w-5 h-5" />
@@ -60,7 +60,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center">
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-muted-foreground">
               © {currentYear} Resume Tailor. All rights reserved.
             </p>
           </div>

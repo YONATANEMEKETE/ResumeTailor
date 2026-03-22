@@ -27,9 +27,9 @@ export function SidebarSearch({
             placeholder="Search..."
             value={value}
             onChange={(e) => onChange?.(e.target.value)}
-            className="pl-8 bg-sidebar-accent/40 text-sidebar-foreground placeholder:text-sidebar-foreground/50 border-sidebar-border/70 ring-1 ring-transparent focus-visible:ring-sidebar-ring/60 focus-visible:border-sidebar-border focus-visible:ring-2 focus-visible:ring-offset-0 rounded-xl text-sm font-medium"
+            className="pl-7 bg-sidebar-accent/40 text-sidebar-foreground placeholder:text-sidebar-foreground/50 border-sidebar-border/70 ring-1 ring-transparent focus-visible:ring-sidebar-ring/60 focus-visible:border-sidebar-border focus-visible:ring-2 focus-visible:ring-offset-0 rounded-md text-xs font-medium h-8"
           />
-          <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground select-none" />
+          <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground select-none" />
         </SidebarGroupContent>
       </SidebarGroup>
     </form>

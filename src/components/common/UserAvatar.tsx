@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import { LogOut, MoreVertical, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '../toggle-theme';
@@ -26,7 +27,8 @@ import { Separator } from '../ui/separator';
 export function UserAvatar() {
   const { data: session, isPending, error, refetch } = authClient.useSession();
   const router = useRouter();
-  const { isMobile } = useSidebar();
+  const { isMobile, state } = useSidebar();
+  const isCollapsed = state === 'collapsed' && !isMobile;
 
   const userName = session?.user?.name;
   const userEmail = session?.user?.email;
@@ -50,11 +52,11 @@ export function UserAvatar() {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <div className="flex items-center gap-2 p-2">
-            <Skeleton className="h-8 w-8 rounded-lg" />
+          <div className="flex items-center gap-2 p-1.5">
+            <Skeleton className="h-7 w-7 rounded-md" />
             <div className="flex flex-col gap-1">
-              <Skeleton className="h-3 w-20" />
-              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-2.5 w-16" />
+              <Skeleton className="h-2.5 w-12" />
             </div>
           </div>
         </SidebarMenuItem>
@@ -85,21 +87,24 @@ export function UserAvatar() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
+              className={cn(
+                'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer',
+                isCollapsed && 'mx-auto justify-center'
+              )}
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className={cn('h-7 w-7 rounded-md grayscale', isCollapsed && 'mx-auto')}>
                 <AvatarImage src={userImage!} alt={userName || 'User'} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-md text-xs">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className={cn('grid flex-1 text-left text-xs leading-tight', isCollapsed && 'hidden')}>
                 <span className="truncate font-medium">{userName}</span>
-                <span className="text-muted-foreground truncate text-xs">
+                <span className="text-muted-foreground truncate text-[10px]">
                   {userEmail}
                 </span>
               </div>
-              <MoreVertical className="ml-auto size-4" />
+              <MoreVertical className={cn('ml-auto size-3.5', isCollapsed && 'hidden')} />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

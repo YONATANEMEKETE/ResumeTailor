@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ShapeHero from '../kokonutui/shape-hero';
 import { Button } from '../ui/button';
 import { ArrowRightIcon } from 'lucide-react';
 import { AnimatedShinyText } from '../ui/animated-shiny-text';
 import { cn } from '@/lib/utils';
 import { Highlighter } from '../ui/highlighter';
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -45,6 +45,16 @@ const Hero = () => {
       },
     },
   };
+
+  const mockupRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: mockupRef,
+    offset: ['start end', 'center center'],
+  });
+
+  const rotateX = useTransform(scrollYProgress, [0, 1], [85, 0]);
+  const rotateZ = useTransform(scrollYProgress, [0, 1], [-15, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.6, 1.2]);
 
   return (
     <section className="relative min-h-screen w-full bg-background overflow-hidden">
@@ -104,7 +114,7 @@ const Hero = () => {
               <Link href="/chat/new">
                 <Button
                   size={'lg'}
-                  className="rounded-md px-5 font-medium transition-all hover:ring-2 hover:ring-primary/20 group cursor-pointer w-56 h-12 relative overflow-hidden"
+                  className="rounded-md px-5 font-medium text-white transition-all hover:ring-2 hover:ring-primary/20 group cursor-pointer w-56 h-12 relative overflow-hidden"
                 >
                   <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
                     Try for Free
@@ -119,6 +129,7 @@ const Hero = () => {
             <motion.div
               variants={itemVariants}
               className="relative mt-16 md:mt-20 w-full max-w-5xl"
+              ref={mockupRef}
             >
               {/* Gradient Glow Background */}
               <div className="absolute inset-0 -z-10 blur-3xl opacity-30">
@@ -127,13 +138,11 @@ const Hero = () => {
 
               {/* Floating Animation Container */}
               <motion.div
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
+                style={{
+                  rotateX,
+                  rotateZ,
+                  scale,
+                  perspective: 1200,
                 }}
                 className="relative"
               >
@@ -144,15 +153,12 @@ const Hero = () => {
                     {/* Image Container */}
                     <div className="relative aspect-video w-full">
                       <Image
-                        src={'/landing-page/hero-mockup.png'}
+                        src={'/landing-page/main-mockup.png'}
                         alt="Resume Tailor Dashboard Preview - AI-powered resume optimization"
                         fill
                         className="object-cover object-top"
                         priority
                       />
-
-                      {/* Overlay Gradient for depth */}
-                      <div className="absolute inset-0 bg-linear-to-t from-background/20 via-transparent to-transparent pointer-events-none" />
                     </div>
                   </div>
                 </div>

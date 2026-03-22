@@ -16,14 +16,14 @@ const NavBar = () => {
             className="flex items-center gap-2 transition-opacity hover:opacity-90"
           >
             <AppLogo size={30} />
-            <span className="text-xl font-bold tracking-tight text-foreground">
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               Resume Tailor
             </span>
           </Link>
 
           {/* CTA Button */}
           <Link href="/chat/new">
-            <Button className="rounded-md px-5 font-medium transition-all hover:ring-2 hover:ring-primary/20 group cursor-pointer">
+            <Button className="rounded-md px-5 font-medium text-white transition-all hover:ring-2 hover:ring-primary/20 group cursor-pointer">
               Get Started
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Button>

@@ -26,14 +26,14 @@ const features: Feature[] = [
     description:
       'Get your tailored resume in seconds. Upload, analyze, and download—all in under a minute.',
     icon: Zap,
-    className: 'md:col-span-1',
+    className: 'md:col-span-2',
   },
   {
     title: 'AI-Powered Analysis',
     description:
-      'Advanced AI analyzes job descriptions and optimizes your resume to match exactly what recruiters are looking for, boosting your chances of getting hired.',
+      'Advanced AI analyzes job descriptions and optimizes your resume to match exactly what recruiters are looking for.',
     icon: Cpu,
-    className: 'md:col-span-2',
+    className: 'md:col-span-1',
   },
   {
     title: 'ATS-Optimized',
@@ -47,21 +47,21 @@ const features: Feature[] = [
     description:
       'Get detailed match scores and insights showing how well your resume aligns with the job requirements.',
     icon: Sparkles,
-    className: 'md:col-span-1',
+    className: 'md:col-span-1 md:row-span-1',
   },
   {
     title: 'Complete Control',
     description:
       "You decide what stays and what goes. The AI assists, but you're always in the driver's seat of your career.",
     icon: Settings2,
-    className: 'md:col-span-2',
+    className: 'md:col-span-1',
   },
   {
     title: 'Fully Customizable',
     description:
       'Review and edit AI suggestions to ensure your resume reflects your unique voice and experiences.',
     icon: Pencil,
-    className: 'md:col-span-1',
+    className: 'md:col-span-2',
   },
 ];
 
@@ -93,7 +93,7 @@ export default function Features() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
           {features.map((feature, index) => (
             <BentoCard key={index} feature={feature} />
           ))}
@@ -119,34 +119,40 @@ function BentoCard({ feature }: { feature: Feature }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       className={cn(
-        'group relative border border-border/40 bg-gradient-to-br from-background/80 to-background/40 overflow-hidden rounded-2xl p-8 backdrop-blur-sm transition-all duration-500 ease-out hover:border-primary/30',
-        feature.className
+        'group relative border border-border/40 bg-gradient-to-br from-background/80 to-background/40 overflow-hidden rounded-2xl p-8 backdrop-blur-sm transition-all duration-500 ease-out hover:border-primary/50 hover:bg-gradient-to-br hover:from-primary/10 hover:to-primary/5',
+        feature.className,
       )}
       onMouseMove={handleMouseMove}
     >
       {/* Premium spotlight effect */}
       <motion.div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              400px circle at ${mouseX}px ${mouseY}px,
-              rgba(var(--primary-rgb), 0.15),
-              transparent 60%
+              300px circle at ${mouseX}px ${mouseY}px,
+              rgba(var(--primary-rgb), 0.25),
+              transparent 50%
             )
           `,
         }}
       />
-      
-      {/* Subtle inner glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-      
+
+      {/* Inner glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/15 via-transparent to-primary/10" />
+
+      {/* Border glow on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl ring-1 ring-inset ring-primary/20 shadow-[inset_0_0_30px_rgba(var(--primary-rgb),0.1)]" />
+
       {/* Grid Pattern Background */}
-      <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="relative z-10 flex flex-col h-full">
-        <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary ring-1 ring-inset ring-primary/20 transition-all duration-300 group-hover:ring-primary/40">
-          <feature.icon className="h-6 w-6" aria-hidden="true" />
+        <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary ring-1 ring-inset ring-primary/30 transition-all duration-300 group-hover:ring-primary/60 group-hover:bg-primary/20">
+          <feature.icon
+            className="h-6 w-6 transition-transform duration-300 group-hover:scale-110"
+            aria-hidden="true"
+          />
         </div>
         <h3 className="text-xl font-semibold leading-7 text-foreground mb-3 transition-colors duration-300 group-hover:text-primary">
           {feature.title}

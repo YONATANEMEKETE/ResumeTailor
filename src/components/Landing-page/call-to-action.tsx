@@ -46,8 +46,8 @@ export default function CallToAction() {
           <Link href="/chat/new">
             <Button
               size="lg"
-              variant="secondary"
-              className="h-12 px-8 text-base rounded-md cursor-pointer bg-white text-black hover:bg-zinc-100 transition-all duration-300 group shadow-lg"
+              variant="outline"
+              className="h-12 px-8 text-base rounded-md cursor-pointer bg-transparent border-white/50 text-white hover:bg-white/40 hover:border-white transition-all duration-300 group"
             >
               Get Started for Free
               <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />

@@ -17,33 +17,33 @@ const InitialChatView = ({
 }: InitialChatViewProps) => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20">
-      <div className="flex flex-col items-center space-y-6 md:space-y-8 w-full">
+      <div className="flex flex-col items-center space-y-4 md:space-y-6 w-full">
         {/* Logo Banner */}
         <LogoBanner />
 
         {/* Headlines */}
-        <div className="text-center space-y-3 md:space-y-4 max-w-2xl">
+        <div className="text-center space-y-2 md:space-y-3 max-w-2xl">
           {/* Greeting */}
           <h1
-            className="text-4xl md:text-7xl text-foreground tracking-tight font-lobster"
+            className="text-3xl md:text-6xl text-foreground tracking-tight font-lobster"
             suppressHydrationWarning
           >
             {getGreeting()}
           </h1>
 
           {/* Main Headline */}
-          <h2 className="text-2xl md:text-4xl font-semibold text-foreground">
+          <h2 className="text-xl md:text-3xl font-semibold text-foreground">
             Tailor Your Resume for any Job
           </h2>
 
           {/* Subtitle */}
-          <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+          <p className="text-xs md:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
             upload your Resume and paste the job description to get started
           </p>
         </div>
 
         {/* Chat Input - Centered */}
-        <div className="w-full pt-8 md:pt-16">
+        <div className="w-full pt-6 md:pt-10">
           <PromptInputWrapper
             onSendMessage={onSendMessage}
             status={status}

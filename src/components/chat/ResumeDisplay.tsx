@@ -165,12 +165,12 @@ const ResumeDisplay = ({ content, isStreaming }: Props) => {
           </Button>
         </div>
       </div>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full">
         <div
           className={cn(
-            'w-full min-w-[800px] rounded-lg border border-border bg-background',
+            'w-full rounded-lg border border-border bg-background',
             'shadow-sm hover:border-primary/40 transition-colors',
-            activeMode === 'preview' && 'p-6',
+            activeMode === 'preview' && 'p-4 md:p-6',
             activeMode === 'edit' && 'p-0 overflow-hidden border-none'
           )}
         >

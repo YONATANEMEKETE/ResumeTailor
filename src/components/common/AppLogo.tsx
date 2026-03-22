@@ -10,7 +10,7 @@ export const AppLogo = ({ className, size = 36 }: AppLogoProps) => {
   return (
     <div
       className={cn(
-        'flex items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm transition-all hover:scale-105 hover:shadow-md',
+        'flex items-center justify-center rounded-md bg-primary text-white shadow-sm transition-all hover:scale-105 hover:shadow-md',
         className,
       )}
       style={{ width: size, height: size }}

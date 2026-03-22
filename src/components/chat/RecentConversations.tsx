@@ -69,10 +69,10 @@ const RecentConversations = ({
   return (
     <>
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel className="text-[11px] tracking-wide uppercase">
+        <SidebarGroupLabel className="text-[10px] tracking-wide uppercase">
           Recent Chats
         </SidebarGroupLabel>
-        <div className="space-y-1 px-2">
+        <div className="space-y-0.5 px-2">
           {/* Loading State */}
           {isLoading && (
             <>

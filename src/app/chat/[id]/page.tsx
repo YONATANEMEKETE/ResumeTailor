@@ -463,7 +463,7 @@ const ChatRoomPage = () => {
 
       <div
         ref={scrollContainerRef}
-        className="w-full max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="w-full max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto bg-transparent h-screen overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         <AnimatedThemeToggler className="fixed top-4 right-4 z-200" />
 
@@ -472,7 +472,7 @@ const ChatRoomPage = () => {
             <LogoBanner />
           </header>
           <div className="flex-1">
-            <div className="min-h-screen pt-20 p-4 space-y-8 pb-48">
+            <div className="min-h-screen pt-16 p-3 space-y-6 pb-40">
               <Conversation className="relative">
                 <ConversationContent>
                   {displayMessages.map((message) => (
@@ -505,7 +505,7 @@ const ChatRoomPage = () => {
                             return (
                               <div
                                 key={`${message.id}-${index}`}
-                                className="space-y-2"
+                                className="space-y-1.5"
                               >
                                 <Message
                                   from={message.role}
@@ -550,8 +550,8 @@ const ChatRoomPage = () => {
                                 {chatError &&
                                   message.role === 'user' &&
                                   message.id === displayMessages.at(-1)?.id && (
-                                    <div className="rounded-xl border border-destructive/40 bg-destructive/10 text-destructive px-4 py-3 flex items-start justify-between gap-3">
-                                      <div className="text-sm">
+                                    <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive px-3 py-2 flex items-start justify-between gap-2">
+                                      <div className="text-xs">
                                         <div className="font-medium">
                                           {chatError}
                                         </div>
@@ -561,7 +561,7 @@ const ChatRoomPage = () => {
                                           size="sm"
                                           variant="outline"
                                           onClick={handleRetry}
-                                          className="cursor-pointer"
+                                          className="cursor-pointer h-7 text-xs"
                                         >
                                           Try again
                                         </Button>
@@ -569,7 +569,7 @@ const ChatRoomPage = () => {
                                           size="sm"
                                           variant="ghost"
                                           onClick={() => setChatError(null)}
-                                          className="cursor-pointer"
+                                          className="cursor-pointer h-7 text-xs"
                                         >
                                           Dismiss
                                         </Button>
@@ -616,13 +616,13 @@ const ChatRoomPage = () => {
               onClick={scrollToBottom}
               size="icon"
               variant="outline"
-              className="absolute bottom-48 left-1/2 -translate-x-1/2 rounded-full shadow-lg z-50 hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
+              className="absolute bottom-40 left-1/2 -translate-x-1/2 rounded-full shadow-lg z-50 hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer h-8 w-8"
             >
               <ArrowDownIcon className="size-4" />
             </Button>
           )}
 
-          <div className="py-4 md:py-6 px-4 md:px-0 absolute bottom-0 w-full max-w-xl md:max-w-3xl lg:max-w-4xl z-10">
+          <div className="py-3 px-3 md:px-0 absolute bottom-0 w-full max-w-xl md:max-w-2xl lg:max-w-3xl z-10">
             <PromptInputWrapper
               onSendMessage={handleSendMessage}
               status={status}

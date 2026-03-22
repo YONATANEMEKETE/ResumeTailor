@@ -56,7 +56,7 @@ export default function SignInPage() {
             </p>
 
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 text-sm text-indigo-300 bg-indigo-500/10 px-3 py-1.5 rounded-full w-fit border border-indigo-500/20">
+              <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 px-3 py-1.5 rounded-full w-fit border border-primary/20">
                 <BriefcaseBusiness className="w-4 h-4" />
                 <span>Join others landing their dream jobs</span>
               </div>

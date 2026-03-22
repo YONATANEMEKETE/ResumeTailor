@@ -53,7 +53,7 @@ const PromptInputWrapper = ({
     <div className="w-full max-w-2xl mx-auto">
       <PromptInput
         onSubmit={handleSubmit}
-        className="bg-background ring-4 md:ring-8 ring-accent shadow-xl rounded-2xl border-none"
+        className="bg-background ring-2 md:ring-4 ring-accent shadow-lg rounded-xl border-none"
         globalDrop
         maxFiles={1}
         maxFileSize={1024 * 1024 * 5}
@@ -78,10 +78,10 @@ const PromptInputWrapper = ({
           />
         </PromptInputBody>
         <PromptInputFooter>
-          <PromptInputTools>
+          <PromptInputTools className="flex items-center gap-2">
             <PromptInputActionMenu>
               <PromptInputActionMenuTrigger
-                className="cursor-pointer size-9"
+                className="cursor-pointer h-7 w-7 min-w-7"
                 variant="outline"
               />
               <PromptInputActionMenuContent>
@@ -95,7 +95,7 @@ const PromptInputWrapper = ({
               onValueChange={(value) => setSelectedModelId(value)}
               value={selectedModelId}
             >
-              <PromptInputSelectTrigger className="cursor-pointer focus-visible:border-border  bg-background border border-border">
+              <PromptInputSelectTrigger className="cursor-pointer focus-visible:border-border bg-background border border-border h-7 text-xs">
                 <PromptInputSelectValue />
               </PromptInputSelectTrigger>
               <PromptInputSelectContent>
@@ -119,12 +119,12 @@ const PromptInputWrapper = ({
                 stop?.();
               }
             }}
-            className="cursor-pointer"
+            className="cursor-pointer size-7"
           >
             {status === 'streaming' ? (
-              <Square className="size-4 animate-spin" />
+              <Square className="size-3.5 animate-spin" />
             ) : (
-              <Send className="size-4" />
+              <Send className="size-3.5" />
             )}
           </PromptInputSubmit>
         </PromptInputFooter>

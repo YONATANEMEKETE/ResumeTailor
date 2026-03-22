@@ -42,7 +42,7 @@ const Editer = ({ content, onChange }: EditerProps) => {
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none focus:outline-none min-h-[600px] px-16 py-12',
+          'prose prose-sm sm:prose lg:prose-lg max-w-none focus:outline-none min-h-[600px] px-4 py-6 md:px-8 md:py-8',
       },
     },
   });
@@ -62,10 +62,10 @@ const Editer = ({ content, onChange }: EditerProps) => {
     <div className="w-full h-full flex flex-col bg-background rounded-lg border border-border shadow-sm overflow-hidden">
       <MenuBar editor={editor} />
       <div className="flex-1 overflow-y-auto bg-secondary/20">
-        <div className="max-w-[850px] mx-auto bg-background shadow-lg min-h-[1056px]">
+        <div className="w-full max-w-full mx-auto bg-background shadow-lg min-h-[1056px]">
           <EditorContent
             editor={editor}
-            className="w-full h-full [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[600px] p-4"
+            className="w-full h-full [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[600px]"
           />
         </div>
       </div>
