@@ -90,25 +90,19 @@ const HowItWorks = () => {
 
                   {/* Content Card */}
                   <div className="ml-16 md:ml-0 w-full md:w-[calc(50%-40px)]">
-                    <div className="group relative p-6 rounded-2xl border border-border/40 bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-sm overflow-hidden transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
-                      {/* Subtle inner glow on hover */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-                      
-                      {/* Border glow on hover */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl ring-1 ring-inset ring-primary/10" />
-                      
-                      <div className="relative z-10 flex items-center gap-4 mb-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary ring-1 ring-inset ring-primary/20 transition-all duration-300 group-hover:ring-primary/40 group-hover:shadow-md group-hover:shadow-primary/10">
-                          <step.icon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
+                    <div className="group p-6 rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm hover:bg-accent/5 transition-colors hover:border-primary/20 shadow-sm hover:shadow-md">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                          <step.icon className="w-6 h-6" />
                         </div>
-                        <span className="text-4xl font-bold text-muted-foreground/10 select-none absolute right-6 top-6 transition-colors duration-300 group-hover:text-primary/20">
+                        <span className="text-4xl font-bold text-muted-foreground/10 select-none absolute right-6 top-6">
                           0{index + 1}
                         </span>
                       </div>
-                      <h3 className="relative z-10 text-xl font-semibold mb-3 transition-colors duration-300 group-hover:text-primary">
+                      <h3 className="text-xl font-semibold mb-3">
                         {step.title}
                       </h3>
-                      <p className="relative z-10 text-muted-foreground leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed">
                         {step.description}
                       </p>
                     </div>
