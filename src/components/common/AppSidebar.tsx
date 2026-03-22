@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
-import Image from 'next/image';
 import { UserAvatar } from './UserAvatar';
 import { SidebarSearch } from './SidebarSearch';
 import RecentChats from '../chat/RecentConversations';
@@ -21,10 +20,9 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { UserFeedback } from './UserFeedback';
-import { useTheme } from 'next-themes';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export function AppSidebar() {
-  const { theme } = useTheme();
   const router = useRouter();
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === 'collapsed' && !isMobile;
@@ -56,13 +54,7 @@ export function AppSidebar() {
           )}
         >
           {/* <Logo className="h-8 w-8" /> */}
-          <div className="relative size-8 shrink-0 rounded-lg bg-sidebar-accent/50 ring-1 ring-sidebar-border/60 overflow-hidden">
-            <Image
-              src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
-              alt="logo"
-              fill
-            />
-          </div>
+          <AppLogo size={30} className="shrink-0" />
           {!isCollapsed && (
             <div className="flex flex-col leading-tight">
               <span className="text-sm font-semibold tracking-tight">

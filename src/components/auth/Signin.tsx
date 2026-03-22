@@ -3,11 +3,9 @@ import { Command, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
+import { AppLogo } from '@/components/common/AppLogo';
 
 const Signin = () => {
-  const { theme } = useTheme();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
@@ -36,14 +34,7 @@ const Signin = () => {
       >
         {/* Mobile Logo (Visible only on mobile) */}
         <div className="lg:hidden flex justify-center mb-8">
-          <div className="relative size-10">
-            <Image
-              src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
-              alt="Logo"
-              fill
-              objectFit="contain"
-            />
-          </div>
+          <AppLogo size={40} />
         </div>
 
         <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-2">

@@ -65,10 +65,10 @@ const Hero = () => {
             <motion.div
               variants={itemVariants}
               className={cn(
-                'group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800 mb-10'
+                'group rounded-md border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800 mb-10',
               )}
             >
-              <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
+              <AnimatedShinyText className="inline-flex items-center justify-center px-2 py-o.5 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 rounded-md">
                 <span>✨ ATS Optimized Resume</span>
                 <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
               </AnimatedShinyText>
@@ -95,8 +95,8 @@ const Hero = () => {
               className="text-base sm:text-lg md:text-xl text-muted-foreground text-balance max-w-4xl mb-10 md:mb-12 leading-relaxed"
             >
               Upload your resume, share the job description, and let the AI
-              guide you with friendly, detailed insights — plus a fully
-              rewritten resume built for your next opportunity.
+              guide you with friendly, detailed insights plus a fully rewritten
+              resume built for your next opportunity.
             </motion.p>
 
             {/* CTA Button */}
@@ -104,9 +104,14 @@ const Hero = () => {
               <Link href="/chat/new">
                 <Button
                   size={'lg'}
-                  className="from-primary via-primary/80 to-primary bg-linear-to-r bg-size-[200%_auto] hover:bg-position-[right_center] transition-all duration-300 cursor-pointer w-56 h-12 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl hover:scale-105"
+                  className="rounded-md px-5 font-medium transition-all hover:ring-2 hover:ring-primary/20 group cursor-pointer w-56 h-12 relative overflow-hidden"
                 >
-                  Try for Free
+                  <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
+                    Try for Free
+                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+                    <ArrowRightIcon className="size-5" />
+                  </span>
                 </Button>
               </Link>
             </motion.div>

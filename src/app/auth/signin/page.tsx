@@ -1,16 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'motion/react';
 import { BriefcaseBusiness } from 'lucide-react';
 import ShapeHero from '@/components/kokonutui/shape-hero';
 import Signin from '@/components/auth/Signin';
-import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export default function SignInPage() {
-  const { theme } = useTheme();
-
   return (
     <div className="w-full h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* Left Side - Visual & Branding (Hidden on mobile) */}
@@ -25,14 +22,7 @@ export default function SignInPage() {
           href="/"
           className="relative z-10 flex items-center gap-2 cursor-pointer"
         >
-          <div className="relative size-10">
-            <Image
-              src={theme === 'light' ? '/logo-white.png' : '/logo-white.png'}
-              alt="Logo"
-              fill
-              objectFit="contain"
-            />
-          </div>
+          <AppLogo size={32} className="" />
           <span className="text-xl font-bold tracking-tight">
             Resume Tailor
           </span>
