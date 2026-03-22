@@ -76,7 +76,6 @@ export function Highlighter({
     })
 
     resizeObserver.observe(element)
-    resizeObserver.observe(document.body)
 
     return () => {
       if (element) {
