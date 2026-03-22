@@ -68,31 +68,12 @@ export function Highlighter({
     const annotation = annotate(element, annotationConfig)
 
     annotationRef.current = annotation
-    annotationRef.current.show()
-
-    const resizeObserver = new ResizeObserver(() => {
-      annotation.hide()
-      annotation.show()
-    })
-
-    resizeObserver.observe(element)
+    annotation.show()
 
     return () => {
-      if (element) {
-        annotate(element, { type: action }).remove()
-        resizeObserver.disconnect()
-      }
+      annotation.remove()
     }
-  }, [
-    shouldShow,
-    action,
-    color,
-    strokeWidth,
-    animationDuration,
-    iterations,
-    padding,
-    multiline,
-  ])
+  }, [])
 
   return (
     <span ref={elementRef} className="relative inline-block bg-transparent">
