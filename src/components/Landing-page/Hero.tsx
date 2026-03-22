@@ -1,27 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import ShapeHero from '../kokonutui/shape-hero';
 import { Button } from '../ui/button';
 import { ArrowRightIcon } from 'lucide-react';
 import { AnimatedShinyText } from '../ui/animated-shiny-text';
 import { cn } from '@/lib/utils';
-import { Highlighter } from '../ui/highlighter';
 import { motion, useScroll, useTransform } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const Hero = () => {
-  const [showHighlight, setShowHighlight] = useState(false);
-
-  useEffect(() => {
-    // Wait for text to appear (2 seconds) before starting highlight animation
-    const timer = setTimeout(() => {
-      setShowHighlight(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -90,13 +79,16 @@ const Hero = () => {
               className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6 md:mb-8"
             >
               Your AI Partner for Landing the{' '}
-              {showHighlight ? (
-                <Highlighter action="highlight" color="#87CEFA">
-                  Job You Want
-                </Highlighter>
-              ) : (
-                <span>Job You Want</span>
-              )}
+              <span className="relative inline-flex items-center gap-2">
+                <span className="font-extrabold uppercase tracking-wide text-primary">JOB</span>
+                <span>You Want</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 2, duration: 0.5, ease: 'easeOut' }}
+                  className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent origin-left"
+                />
+              </span>
             </motion.h1>
 
             {/* Description */}
