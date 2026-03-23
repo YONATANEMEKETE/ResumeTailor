@@ -453,7 +453,7 @@ const ChatRoomPage = () => {
       </div>
 
       {isLoadingConversation && !isNewChatFlowActive && (
-        <div className="absolute inset-0 backdrop-blur-sm bg-background/50 z-9999 flex items-center justify-center">
+        <div className="absolute inset-0 backdrop-blur-sm bg-gray-500/30 z-9999 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <ClassicLoader />
             <p className="text-sm text-muted-foreground">
