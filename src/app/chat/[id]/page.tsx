@@ -102,7 +102,7 @@ const ChatRoomPage = () => {
 
   const isNewChatFlowActive = isNewChatFlow || Boolean(pendingMessage);
 
-  const { messages, sendMessage, status, stop, setMessages } = useChat({
+  const { messages, sendMessage, status, stop, setMessages, regenerate, error, clearError } = useChat({
     id: conversationId || 'unknown-conversation',
     transport: new DefaultChatTransport({
       api: '/api/chat-with-ai',
@@ -430,8 +430,10 @@ const ChatRoomPage = () => {
 
   const handleRetry = () => {
     if (!lastUserMessageRef.current) return;
-    const { message, modelId } = lastUserMessageRef.current;
-    handleSendMessage(message, modelId);
+    const { modelId } = lastUserMessageRef.current;
+    clearError(); // Clear internal AI SDK error
+    setChatError(null); // Clear UI error
+    regenerate({ body: { model: modelId } });
   };
 
   if (isSessionPending) {
